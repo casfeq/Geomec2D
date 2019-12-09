@@ -75,6 +75,7 @@ int main(int argc, char** args)
 	double consolidationTime=h*h/consolidationCoefficient;
 	double Lt=(Nt-1)*consolidationTime; // [s]
 	double dt=Lt/(Nt-1);
+	
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
