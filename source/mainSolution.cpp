@@ -72,9 +72,9 @@ int main(int argc, char** args)
 	int Nt=501;
 	int mesh=5;
 	double h=1./mesh;
+	double dt=100e3;
+	double Lt=(Nt-1)*dt;
 	double consolidationTime=h*h/consolidationCoefficient;
-	double Lt=(Nt-1)*consolidationTime; // [s]
-	double dt=Lt/(Nt-1);
 	
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
@@ -99,7 +99,7 @@ int main(int argc, char** args)
 	cout << "Solved sealed column for: \n";
 	createSolveRunInfo(myGridType,myInterpScheme,"SealedColumn");
 	exportSolveRunInfo(dt,"SealedColumn_"+myMedium);
-	ierr=sealedColumn(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);
+	ierr=sealedColumn(myGridType,myInterpScheme,(Nt-1)*2+1,mesh,Lt*2,g,columnLoad,myProperties);
 		CHKERRQ(ierr);
 	cout << "Solved Terzaghi for: \n";
 	createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");

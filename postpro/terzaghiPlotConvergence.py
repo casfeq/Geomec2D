@@ -72,7 +72,7 @@ for i in range(0,len(dt)):
 	charLength=np.loadtxt(fname=fileName,usecols=(0))
 	pressureError=np.loadtxt(fname=fileName,usecols=(1))
 	plt.loglog(charLength,pressureError,'--o',color=colors[i],ms=5,mec='k',mew=0.5, \
-		label="dt="+str('%.0f'%float(dt[i]))+" s")
+		label="$\Delta$t="+str('%.0f'%float(dt[i]))+" s")
 	# data=np.loadtxt(fname=fileName)
 	# for i in range(0,pointsUsed):
 	# 	row=[]

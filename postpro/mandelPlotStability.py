@@ -86,7 +86,7 @@ for i in range(0,len(dt)):
 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
 	xNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(xNumeric,pNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="dt="+str(format(dt[i],'.2e'))+" s")
+		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
 
 	# Set axes' scale and limits
 	axes=plt.gca()
@@ -143,7 +143,7 @@ for i in range(0,len(dt)):
 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
 	xNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(xNumeric,eNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="dt="+str(format(dt[i],'.2e'))+" s")
+		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
 
 	# Set axes' scale and limits
 	axes=plt.gca()
@@ -199,7 +199,7 @@ for i in range(0,len(dt)):
 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
 	xNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(xNumeric,uNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="dt="+str(format(dt[i],'.2e'))+" s")
+		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
 
 	# Set axes' scale and limits
 	axes=plt.gca()
@@ -255,7 +255,7 @@ for i in range(0,len(dt)):
 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(vNumeric,yNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="dt="+str(format(dt[i],'.2e'))+" s")
+		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
 
 	# Set axes' scale and limits
 	axes=plt.gca()

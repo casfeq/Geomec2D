@@ -25,3 +25,6 @@ do
 	python3 -W ignore ./postpro/mandelPlotStability.py "softSediment"
 	echo ""
 done
+# echo "-- Plotting results"
+# python3 -W ignore ./postpro/terzaghiPlotStabilityComparison.py "softSediment"
+# python3 -W ignore ./postpro/mandelPlotStabilityComparison.py "softSediment"

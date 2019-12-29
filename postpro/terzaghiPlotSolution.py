@@ -63,7 +63,7 @@ fig=plt.figure(figsize=(8,5))
 fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # Define figure's name
-plotName="plot/terzaghiSolution_"+gridType+"-grid.png"
+plotName="plot/terzaghiSolution_"+gridType+"-grid.pdf"
 
 # Add subplot for pressure
 fig.add_subplot(1,2,1)
@@ -90,7 +90,7 @@ for i in range(0,len(timesteps)):
 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,'.',color=colors[i],ms=7.5,mec='k',mew=0.5, \
-		label="Timestep "+str(timesteps[i]))
+		label="Time level "+str(timesteps[i]))
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -144,7 +144,7 @@ plt.savefig(plotName)
 fig=plt.figure(figsize=(8,8))
 
 # Define figure's name
-plotName="plot/terzaghiSolution_p_"+gridType+"-grid.png"
+plotName="plot/terzaghiSolution_p_"+gridType+"-grid.pdf"
 
 # Plot pressure
 for i in range(0,len(timesteps)):
@@ -168,7 +168,7 @@ for i in range(0,len(timesteps)):
 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,'.',color=colors[i],ms=10.0,mec='k',mew=0.5, \
-		label="Timestep "+str(timesteps[i]))
+		label="Time level "+str(timesteps[i]))
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -189,7 +189,7 @@ plt.savefig(plotName)
 fig=plt.figure(figsize=(8,8))
 
 # Define figure's name
-plotName="plot/terzaghiSolution_v_"+gridType+"-grid.png"
+plotName="plot/terzaghiSolution_v_"+gridType+"-grid.pdf"
 
 # Plot displacement
 for i in range(0,len(timesteps)):
@@ -213,7 +213,7 @@ for i in range(0,len(timesteps)):
 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric=plt.plot(vNumeric,yNumeric,'.',color=colors[i],ms=10.0,mec='k',mew=0.5, \
-		label="Timestep "+str(timesteps[i]))
+		label="Time level "+str(timesteps[i]))
 
 # Set axes' scale and limits
 axes=plt.gca()
