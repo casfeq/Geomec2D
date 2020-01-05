@@ -27,6 +27,10 @@ int main(int argc, char** args)
 	string myGridType=args[1];
 	string myInterpScheme=args[2];
 	string myMedium=args[3];
+	vector<int> problemsSolved;
+	problemsSolved.push_back(atoi(args[4])/100%10);
+	problemsSolved.push_back(atoi(args[4])/10%10);
+	problemsSolved.push_back(atoi(args[4])%10);
 
 /*		PROPERTIES IMPORT
 	----------------------------------------------------------------*/	
@@ -103,23 +107,34 @@ int main(int argc, char** args)
 	cout << "Grid type: " << myGridType << "\n";
 	cout << "Interpolation scheme: " << myInterpScheme << "\n";
 	cout << "Minimum time-step: " << consolidationTime/6 << "\n";
-	cout << "Solved Terzaghi for: \n";
-	createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
-	for(int i=0; i<timestepSize.size(); i++)
+	for(int i=0; i<3; i++)
 	{
-		Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
-		dt=Lt/(Nt-1);
-		exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
-		ierr=terzaghi(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);CHKERRQ(ierr);
-	}
-	cout << "Solved Mandel for: \n";
-	createSolveRunInfo(myGridType,myInterpScheme,"Mandel");
-	for(int i=0; i<timestepSize.size(); i++)
-	{
-		Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
-		dt=Lt/(Nt-1);
-		exportSolveRunInfo(dt,"Mandel_"+myMedium);
-		ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);CHKERRQ(ierr);
+		if(problemsSolved[i]==2)
+		{
+			cout << "Solved Terzaghi for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
+			for(int i=0; i<timestepSize.size(); i++)
+			{
+				Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
+				dt=Lt/(Nt-1);
+				exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
+				ierr=terzaghi(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);
+					CHKERRQ(ierr);
+			}
+		}
+		else if(problemsSolved[i]==4)
+		{
+			cout << "Solved Mandel for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Mandel");
+			for(int i=0; i<timestepSize.size(); i++)
+			{
+				Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
+				dt=Lt/(Nt-1);
+				exportSolveRunInfo(dt,"Mandel_"+myMedium);
+				ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
+					CHKERRQ(ierr);
+			}
+		}
 	}
 	
 /*		PETSC FINALIZE

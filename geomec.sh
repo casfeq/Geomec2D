@@ -1,8 +1,11 @@
 rm -rf plot/*
 rm -rf export/*
+
+# GUI
 ans=$(zenity --list --text "Choose an application" --radiolist --column "Pick" --column \
 	"Application" FALSE "Verification" FALSE "h_Convergence_Analysis" FALSE \
-	"t_Convergence_Analysis" FALSE "Stability_Test" FALSE "Dimensionless_Stability_Test"); echo $ans
+	"t_Convergence_Analysis" FALSE "Stability_Test" FALSE "Dimensionless_Stability_Test" \
+	--width=300 --height=300); echo $ans
 if [ $ans == "Verification" ]; then
 	clear
 	./bash/solution.sh

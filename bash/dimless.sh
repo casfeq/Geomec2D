@@ -7,9 +7,38 @@ make
 cd ..
 echo ""
 
-# DEFINE GRIDS AND INTERPOLATION SCHEMES
-declare -a gridType=("staggered" "collocated")
-declare -a interpScheme=("NA" "CDS")
+# GUI
+declare -a gridType=()
+declare -a interpScheme=()
+declare -a problemsSolved=0
+declare -a inputOptions
+declare -a medium
+ans=$(zenity --list --text "Choose grid type and interpolation schemes" --checklist \
+	--column "Pick" --column "Formulation" FALSE "Staggered_Grid" FALSE "Collocated_Grid_with_CDS" \
+	FALSE "Collocated_Grid_with_1D_PIS" FALSE "Collocated_Grid_with_I_2D_PIS" \
+	FALSE "Collocated_Grid_with_C_2D_PIS" --width=300 --height=300);
+
+IFS="|"
+for word in $ans
+do
+	if [ $word == "Staggered_Grid" ]; then
+		gridType+=("staggered")
+		interpScheme+=("NA")
+	elif [ $word == "Collocated_Grid_with_CDS" ]; then
+		gridType+=("collocated")
+		interpScheme+=("CDS")
+	elif [ $word == "Collocated_Grid_with_1D_PIS" ]; then
+		gridType+=("collocated")
+		interpScheme+=("1DPIS")
+	elif [ $word == "Collocated_Grid_with_I_2D_PIS" ]; then
+		gridType+=("collocated")
+		interpScheme+=("I2DPIS")
+	elif [ $word == "Collocated_Grid_with_C_2D_PIS" ]; then
+		gridType+=("collocated")
+		interpScheme+=("C2DPIS")
+	fi
+done
+IFS=""
 numRuns=${#gridType[@]}
 
 # RUN
@@ -30,5 +59,3 @@ do
 	echo ""
 done
 rm -rf export/*
-nautilus plot/
-echo ""
