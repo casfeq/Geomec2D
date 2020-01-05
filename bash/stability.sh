@@ -28,3 +28,6 @@ done
 # echo "-- Plotting results"
 # python3 -W ignore ./postpro/terzaghiPlotStabilityComparison.py "softSediment"
 # python3 -W ignore ./postpro/mandelPlotStabilityComparison.py "softSediment"
+rm -rf export/*
+nautilus plot/
+echo ""

@@ -29,3 +29,6 @@ do
 		"ohioSandstone" "alundum"
 	echo ""
 done
+rm -rf export/*
+nautilus plot/
+echo ""

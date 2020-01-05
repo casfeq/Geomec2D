@@ -27,3 +27,6 @@ do
 	python3 -W ignore ./postpro/mandelPlotSolution.py "gulfMexicoShale"
 	echo ""
 done
+rm -rf export/*
+nautilus plot/
+echo ""

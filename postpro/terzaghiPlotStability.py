@@ -110,60 +110,60 @@ fig.legend(loc='upper center',ncol=3)
 # Save figure
 plt.savefig(plotName)
 
-# Define figure's name
-plotName="plot/terzaghiStability_v_"+gridType+"-grid.pdf"
+# # Define figure's name
+# plotName="plot/terzaghiStability_v_"+gridType+"-grid.pdf"
 
-# Create and define figure's size and margins
-fig=plt.figure(figsize=(8,9))
-fig.subplots_adjust(top=0.90,bottom=0.05,left=0.08,right=0.96,wspace=0.4,hspace=0.3)
+# # Create and define figure's size and margins
+# fig=plt.figure(figsize=(8,9))
+# fig.subplots_adjust(top=0.90,bottom=0.05,left=0.08,right=0.96,wspace=0.4,hspace=0.3)
 
-# Loop for adding displacement subplots
-for i in range(0,len(dt)):
+# # Loop for adding displacement subplots
+# for i in range(0,len(dt)):
 
-	# Add subplot
-	ax.append(fig.add_subplot(2,2,i+1))
+# 	# Add subplot
+# 	ax.append(fig.add_subplot(2,2,i+1))
 
-	# Plot displacement
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VExact_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
-	vExact=np.loadtxt(fname=fileName)
-	vExact[:]=[x*1000 for x in vExact]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YExact_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
-	yExact=np.loadtxt(fname=fileName)
-	if i==0:
-		exact,=plt.plot(vExact,yExact,'-k',fillstyle='none',label="Analytical")
-	else:
-		exact,=plt.plot(vExact,yExact,'-k',fillstyle='none')
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VNumeric_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
-	vNumeric=np.loadtxt(fname=fileName)
-	vNumeric[:]=[x*1000 for x in vNumeric]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YVNumeric_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
-	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(vNumeric,yNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
+# 	# Plot displacement
+# 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VExact_dt="+ \
+# 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+# 	vExact=np.loadtxt(fname=fileName)
+# 	vExact[:]=[x*1000 for x in vExact]
+# 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YExact_dt="+ \
+# 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+# 	yExact=np.loadtxt(fname=fileName)
+# 	if i==0:
+# 		exact,=plt.plot(vExact,yExact,'-k',fillstyle='none',label="Analytical")
+# 	else:
+# 		exact,=plt.plot(vExact,yExact,'-k',fillstyle='none')
+# 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VNumeric_dt="+ \
+# 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+# 	vNumeric=np.loadtxt(fname=fileName)
+# 	vNumeric[:]=[x*1000 for x in vNumeric]
+# 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YVNumeric_dt="+ \
+# 		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+# 	yNumeric=np.loadtxt(fname=fileName)
+# 	numeric,=plt.plot(vNumeric,yNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
+# 		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
 
-	# Set axes' scale and limits
-	axes=plt.gca()
-	axes.set_ylim([0,None])
+# 	# Set axes' scale and limits
+# 	axes=plt.gca()
+# 	axes.set_ylim([0,None])
 
-	# Set axes' labels
-	plt.xlabel('Vertical Displacement (mm)')
-	plt.ylabel('Height (m)')
-	plt.grid(which='major',axis='both')
+# 	# Set axes' labels
+# 	plt.xlabel('Vertical Displacement (mm)')
+# 	plt.ylabel('Height (m)')
+# 	plt.grid(which='major',axis='both')
 
-# Subplots' titles
-ax[0].title.set_text('25% of consolidation time')
-ax[1].title.set_text('10% of consolidation time')
-ax[2].title.set_text('5% of consolidation time')
-ax[3].title.set_text('1% of consolidation time')
+# # Subplots' titles
+# ax[0].title.set_text('25% of consolidation time')
+# ax[1].title.set_text('10% of consolidation time')
+# ax[2].title.set_text('5% of consolidation time')
+# ax[3].title.set_text('1% of consolidation time')
 
-# Add figure's legend
-fig.legend(loc='upper center',ncol=3)
+# # Add figure's legend
+# fig.legend(loc='upper center',ncol=3)
 
-# Save figure
-plt.savefig(plotName)
+# # Save figure
+# plt.savefig(plotName)
 
 print("Plotted Terzaghi")

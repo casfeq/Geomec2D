@@ -24,3 +24,6 @@ do
     python3 -W ignore ./postpro/terzaghiPlotTConvergence.py
     echo ""
 done
+rm -rf export/*
+nautilus plot/
+echo ""
