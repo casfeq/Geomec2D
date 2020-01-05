@@ -67,6 +67,8 @@ int main(int argc, char** args)
 	storativity=porosity*fluidCompressibility+(alpha-porosity)*solidCompressibility;
 	double consolidationCoefficient=(permeability/fluidViscosity)/(storativity+
 		alpha*alpha/longitudinalModulus);
+	double undrainedLongitudinalModulus=longitudinalModulus+alpha*alpha/storativity;
+	double StiffContrast=(alpha*alpha)/(undrainedLongitudinalModulus*storativity);
 
 	int Nt=2;
 	int mesh=3;
@@ -74,12 +76,14 @@ int main(int argc, char** args)
 	double consolidationTime=h*h/consolidationCoefficient;
 	double Lt;
 	double dt;
+	double Reynolds=(alpha*alpha*fluidViscosity)/(permeability*longitudinalModulus);
+	double Fourier=permeability/(fluidViscosity*storativity);
 	vector<double> timestepSize=
 	{
 		0.25,
 		0.10,
 		0.05,
-		0.001
+		0.01
 	};
 	
 /*		OTHER PARAMETERS
@@ -101,6 +105,7 @@ int main(int argc, char** args)
 	cout << "Interpolation scheme: " << myInterpScheme << "\n";
 	cout << "Properties used: " << myMedium << "\n";
 	cout << "Minimum time-step: " << (h*h)/(6*consolidationCoefficient) << "\n";
+	cout << "Stiffness Constrast:" << StiffContrast << "\n";
 	cout << "Solved Terzaghi for: \n";
 	createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
 	for(int i=0; i<timestepSize.size(); i++)
@@ -109,6 +114,14 @@ int main(int argc, char** args)
 		dt=Lt/(Nt-1);
 		exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
 		ierr=terzaghi(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);CHKERRQ(ierr);
+		// Reynolds=Reynolds*(h*h)/dt;
+		// Fourier=Fourier*dt/(h*h);
+		// printscalar(Reynolds);newline();
+		// printscalar(Fourier);newline();
+		// printscalar(Reynolds*Fourier);newline();
+		// printscalar(StiffContrast/(1-StiffContrast));newline();
+		// Reynolds=Reynolds*dt/(h*h);
+		// Fourier=Fourier*(h*h)/dt;
 	}
 	
 /*		PETSC FINALIZE
