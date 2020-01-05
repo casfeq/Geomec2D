@@ -55,16 +55,17 @@ int main(int argc, char** args)
 	// Consolidation coefficient
 	double storativity,porosity,fluidViscosity,permeability,fluidCompressibility,
 		solidCompressibility,bulkCompressibility,longitudinalModulus,alpha;
-	porosity=myProperties.phi;
-	fluidViscosity=myProperties.mu_f;
-	permeability=myProperties.K;
-	fluidCompressibility=myProperties.c_f;
-	solidCompressibility=myProperties.c_s;
-	bulkCompressibility=1/(myProperties.lambda+2*myProperties.G/3);
-	longitudinalModulus=2*myProperties.G+myProperties.lambda;
+	porosity=myProperties.porosity;
+	fluidViscosity=myProperties.fluidViscosity;
+	permeability=myProperties.permeability;
+	fluidCompressibility=1/myProperties.fluidBulkModulus;
+	solidCompressibility=1/myProperties.solidBulkModulus;
+	bulkCompressibility=1/myProperties.bulkModulus;
+	longitudinalModulus=myProperties.bulkModulus+4*myProperties.shearModulus/3;
 	alpha=1-solidCompressibility/bulkCompressibility;
 	storativity=porosity*fluidCompressibility+(alpha-porosity)*solidCompressibility;
-	double c=(permeability/fluidViscosity)/(storativity+alpha*alpha/longitudinalModulus);
+	double consolidationCoefficient=(permeability/fluidViscosity)/(storativity+
+		alpha*alpha/longitudinalModulus);
 
 	double Lt=5e5; // [s]
 
