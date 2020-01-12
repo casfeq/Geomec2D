@@ -1,3 +1,5 @@
+mkdir -p export
+mkdir -p plot
 rm -rf plot/*
 rm -rf export/*
 
