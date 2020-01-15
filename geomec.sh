@@ -1,5 +1,6 @@
 mkdir -p export
 mkdir -p plot
+mkdir -p build
 rm -rf plot/*
 rm -rf export/*
 
