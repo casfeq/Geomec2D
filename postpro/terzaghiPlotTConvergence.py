@@ -1,8 +1,8 @@
 """
 	This source code is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The routine here defined
-	is used to plot the error obtained on the solution of the problem presented and solved by
-	Terzaghi [1] against the meshsize to test the convergence of the method.
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The routine here 
+	defined is used to plot the error obtained on the solution of the problem presented and solved 
+	by Terzaghi [1] against the meshsize to test the convergence of the method.
 
 	Written by FERREIRA, C. A. S.
 

@@ -1,9 +1,9 @@
 """
 	This source code is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The routine here defined
-	is used to plot the numerical and analytical results obtained on the solution of the problems
-	presented and solved by Mandel [1] with parameters such that the stability of the solution is
-	tested.
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The routine here 
+	defined is used to plot the numerical and analytical results obtained on the solution of the 
+	problems presented and solved by Mandel [1] with parameters such that the stability of the 
+	solution is tested.
 
 	Written by FERREIRA, C. A. S.
 

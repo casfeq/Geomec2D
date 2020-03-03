@@ -1,7 +1,7 @@
 /*
 	This header is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The template functions
-	defined here are used for printing on the terminal scalars, vectors and matrices.
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The template 
+	functions defined here are used for printing on the terminal scalars, vectors and matrices.
 
  	Written by FERREIRA, C. A. S.
 

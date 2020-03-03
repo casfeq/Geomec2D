@@ -1,6 +1,6 @@
 /*
 	This header is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The functions here
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The functions here
 	defined uses the classes predefined for the solution of the benchmarking problems, presented and
 	solved by Terzaghi [2] and Mandel [1], and for the convergence analysis of the method.
 

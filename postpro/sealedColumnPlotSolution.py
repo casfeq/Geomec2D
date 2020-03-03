@@ -1,8 +1,8 @@
 """
 	This source code is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The routine here defined
-	is used to plot the numerical and analytical results obtained on the solution of the problem
-	presented and solved by Terzaghi [1].
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The routine here 
+	defined is used to plot the numerical and analytical results obtained on the solution of the 
+	problem presented and solved by Terzaghi [1].
 
 	Written by FERREIRA, C. A. S.
 
