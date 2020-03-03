@@ -54,7 +54,7 @@ colors.append("#02c14d")
 colors.append("#fec615")
 
 # Define figure's name
-plotName="plot/terzaghiDimless_p_"+gridType+"-grid.pdf"
+plotName="plot/terzaghiDimless_p_"+gridType+"-grid.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,9))
@@ -131,7 +131,7 @@ fig.legend(loc='upper center',ncol=3)
 plt.savefig(plotName)
 
 # # Define figure's name
-# plotName="plot/terzaghiDimless_p_"+gridType+"-grid_1.pdf"
+# plotName="plot/terzaghiDimless_p_"+gridType+"-grid_1.png"
 
 # # Create and define figure's size and margins
 # fig=plt.figure(figsize=(8,4.5))
@@ -206,7 +206,7 @@ plt.savefig(plotName)
 # plt.savefig(plotName)
 
 # # Define figure's name
-# plotName="plot/terzaghiDimless_p_"+gridType+"-grid_2.pdf"
+# plotName="plot/terzaghiDimless_p_"+gridType+"-grid_2.png"
 
 # # Create and define figure's size and margins
 # fig=plt.figure(figsize=(8,4.5))

@@ -62,7 +62,7 @@ colors.append("#02c14d")
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/mandelSolution_p_"+gridType+"-grid.pdf"
+# plotName="plot/mandelSolution_p_"+gridType+"-grid.png"
 
 # # Plot pressure
 # for i in range(0,len(timesteps)):
@@ -107,7 +107,7 @@ colors.append("#02c14d")
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/mandelSolution_eps_"+gridType+"-grid.pdf"
+# plotName="plot/mandelSolution_eps_"+gridType+"-grid.png"
 
 # # Plot strain
 # for i in range(0,len(timesteps)):
@@ -152,7 +152,7 @@ colors.append("#02c14d")
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/mandelSolution_u_"+gridType+"-grid.pdf"
+# plotName="plot/mandelSolution_u_"+gridType+"-grid.png"
 
 # # Plot horizontal displacement
 # for i in range(0,len(timesteps)):
@@ -197,7 +197,7 @@ colors.append("#02c14d")
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/mandelSolution_v_"+gridType+"-grid.pdf"
+# plotName="plot/mandelSolution_v_"+gridType+"-grid.png"
 
 # # Plot vertical displacement
 # for i in range(0,len(timesteps)):
@@ -245,7 +245,7 @@ fig=plt.figure(figsize=(8,8))
 fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # Define figure's name
-plotName="plot/mandelSolution_"+gridType+"-grid.pdf"
+plotName="plot/mandelSolution_"+gridType+"-grid.png"
 
 # Add subplot for pressure
 fig.add_subplot(2,2,1)
@@ -389,7 +389,7 @@ plt.savefig(plotName)
 # fig.subplots_adjust(top=0.85,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # # Define figure's name
-# plotName="plot/mandelSolution_"+gridType+"-grid_1.pdf"
+# plotName="plot/mandelSolution_"+gridType+"-grid_1.png"
 
 # # Add subplot for pressure
 # fig.add_subplot(1,2,1)
@@ -471,7 +471,7 @@ plt.savefig(plotName)
 # fig.subplots_adjust(top=0.85,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # # Define figure's name
-# plotName="plot/mandelSolution_"+gridType+"-grid_2.pdf"
+# plotName="plot/mandelSolution_"+gridType+"-grid_2.png"
 
 # # Add subplot for horizontal displacement
 # fig.add_subplot(1,2,1)

@@ -62,7 +62,7 @@ labels.append("Collocated grid with I-2D-PIS")
 labels.append("Collocated grid with C-2D-PIS")
 
 # Define figure's name
-plotName="plot/mandelStability_comparison.pdf"
+plotName="plot/mandelStability_comparison.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,9))

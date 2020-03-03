@@ -49,7 +49,7 @@ colors.append("#02c14d")
 # SUBPLOT T-CONVERGENCE
 
 # Define figure's name
-plotName="plot/terzaghiTConvergence_"+gridType+"-grid.pdf"
+plotName="plot/terzaghiTConvergence_"+gridType+"-grid.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,5))

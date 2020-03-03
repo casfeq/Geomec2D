@@ -42,6 +42,7 @@ public:
 	int getUDisplacementFVPosition(int,int);
 	int getVDisplacementFVPosition(int,int);
 	int getPressureFVPosition(int,int);
+	int getMacroPressureFVPosition(int,int);
 	void assemblyCoefficientsMatrix(double,double,double,double,double,double,double,double,double,
 		double,double);
 	void assemblyXMomentum(double,double,double,double,double);
@@ -167,6 +168,15 @@ int coefficientsAssembly::getPressureFVPosition(int x, int y)
 	int pressureFVPosition;
 
 	pressureFVPosition=pressureFVIndex[x][y]+Nu+Nv-1;
+
+	return pressureFVPosition;
+}
+
+int coefficientsAssembly::getMacroPressureFVPosition(int x, int y)
+{
+	int pressureFVPosition;
+
+	pressureFVPosition=pressureFVIndex[x][y]+Nu+Nv+NP-1;
 
 	return pressureFVPosition;
 }

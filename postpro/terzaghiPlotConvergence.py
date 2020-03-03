@@ -55,7 +55,7 @@ colors.append("#02c14d")
 # SUBPLOT H-CONVERGENCE
 
 # Define figure's name
-plotName="plot/terzaghiConvergence_"+gridType+"-grid.pdf"
+plotName="plot/terzaghiConvergence_"+gridType+"-grid.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,5))

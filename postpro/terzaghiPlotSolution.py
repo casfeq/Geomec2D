@@ -63,7 +63,7 @@ fig=plt.figure(figsize=(8,5))
 fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # Define figure's name
-plotName="plot/terzaghiSolution_"+gridType+"-grid.pdf"
+plotName="plot/terzaghiSolution_"+gridType+"-grid.png"
 
 # Add subplot for pressure
 fig.add_subplot(1,2,1)
@@ -144,7 +144,7 @@ plt.savefig(plotName)
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/terzaghiSolution_p_"+gridType+"-grid.pdf"
+# plotName="plot/terzaghiSolution_p_"+gridType+"-grid.png"
 
 # # Plot pressure
 # for i in range(0,len(timesteps)):
@@ -189,7 +189,7 @@ plt.savefig(plotName)
 # fig=plt.figure(figsize=(8,8))
 
 # # Define figure's name
-# plotName="plot/terzaghiSolution_v_"+gridType+"-grid.pdf"
+# plotName="plot/terzaghiSolution_v_"+gridType+"-grid.png"
 
 # # Plot displacement
 # for i in range(0,len(timesteps)):

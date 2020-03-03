@@ -127,6 +127,16 @@ int main(int argc, char** args)
 			ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
 				CHKERRQ(ierr);
 		}
+		else if(problemsSolved[i]==8)
+		{
+			myProperties.macroPorosity=myProperties.porosity;
+			myProperties.macroPermeability=myProperties.permeability;
+			cout << "Solved Terzaghi (double porosity) for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Mandel");
+			exportSolveRunInfo(dt,"Mandel_"+myMedium);
+			ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+				// CHKERRQ(ierr);
+		}
 	}
 	
 /*		PETSC FINALIZE
