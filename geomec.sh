@@ -1,4 +1,3 @@
-rm -rf build
 mkdir -p export
 mkdir -p plot
 mkdir -p build
