@@ -1,7 +1,7 @@
 /*
 	This header is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The class defined here
-	contains the functions for determination of the poroelasticity problem's parameters.
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The class defined 
+	here contains the functions for determination of the poroelasticity problem's parameters.
 
  	Written by FERREIRA, C. A. S.
 

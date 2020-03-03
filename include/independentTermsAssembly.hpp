@@ -1,7 +1,7 @@
 /*
 	This header is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The class defined here
-	contains the functions for assembly of the independent terms of the linear system which
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The class defined 
+	here contains the functions for assembly of the independent terms of the linear system which
 	represents the discretized problem of poroelasticity.
 
  	Written by FERREIRA, C. A. S.

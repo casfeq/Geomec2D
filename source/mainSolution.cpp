@@ -1,10 +1,10 @@
 /*
 	This source code implements a Finite Volume Method for discretization and solution of the 
-	consolidation problem as part of a master's thesis entitled "Analysis Numerical Schemes in
-	Collocated and Staggered Grids for Poroelasticity Problems". This source code uses the functions
-	predefined for the solution of the problems presented and solved by Terzaghi [3] and Mandel [2].
-	The governing equations are discretized within the FVM and the resulting linear system of
-	equations is solved with a LU Factorization found in PETSc [1].
+	consolidation problem as part of a master's thesis entitled "Analysis of Numerical Schemes in
+	Collocated and Staggered Grids for Problems of Poroelasticity". This source code uses the 
+	functions predefined for the solution of the problems presented and solved by Terzaghi [3] and 
+	Mandel [2]. The governing equations are discretized within the FVM and the resulting linear 
+	system of equations is solved with a LU Factorization found in PETSc [1].
 
  	Written by FERREIRA, C. A. S.
 

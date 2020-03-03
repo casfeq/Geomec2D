@@ -5,7 +5,7 @@ if($ENV{DESKTOP_SESSION} STREQUAL "gnome")
     set(CMAKE_CXX_COMPILER mpicxx)
 endif()
 
-project(FVM-2D)
+project(GeomecFVLib)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules/)
 

@@ -1,9 +1,9 @@
 /*
 	This header is part of the development of a master's thesis entitled "Analysis of Numerical
-	Schemes in Collocated and Staggered Grids for Poroelasticity Problems". The class defined here
-	contains the functions for the solution of the linear system which represents the discretized
-	problem of poroelasticity. The linear system of equations is solved with LU Factorization found
-	in PETSc [1].
+	Schemes in Collocated and Staggered Grids for Problems of Poroelasticity". The class defined 
+	here contains the functions for the solution of the linear system which represents the 
+	discretized problem of poroelasticity. The linear system of equations is solved with LU 
+	Factorization found in PETSc [1].
 	
  	Written by FERREIRA, C. A. S.
 
