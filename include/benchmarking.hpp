@@ -1005,7 +1005,23 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 		myCoefficients.sparseCoefficientsColumn);
 	vector<double> sparseCoefficientsValue;swap(sparseCoefficientsValue,
 		myCoefficients.sparseCoefficientsValue);
-	printsparse(coefficientsMatrix);newline();
+
+
+	// Variables declaration
+	int timeStep;
+	vector<double> independentTermsArray;
+
+	// Constructors
+	independentTermsAssembly myIndependentTerms(bcType,bcValue,Nu,Nv,NP,idU,idV,idP,cooU,cooV,cooP,
+		horFaceStatus,verFaceStatus,gridType,interpScheme);
+
+	// Assembly of the independent terms array
+	// myIndependentTerms.assemblyIndependentTermsArray(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,rho,g,
+	// 	uField,vField,pField,timeStep);
+
+	// Passing independent terms array
+	// independentTermsArray=myIndependentTerms.independentTermsArray;
+	// printvector(independentTermsArray);newline();
 
 /*		LINEAR SYSTEM SOLVER
 	----------------------------------------------------------------*
