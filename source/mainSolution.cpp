@@ -73,8 +73,8 @@ int main(int argc, char** args)
 	double consolidationCoefficient=(permeability/fluidViscosity)/(storativity+
 		alpha*alpha/longitudinalModulus);
 
-	int Nt=501;
-	int mesh=5;
+	int Nt=2;
+	int mesh=2;
 	double h=1./mesh;
 	double consolidationTime=h*h/consolidationCoefficient;
 	double dt=consolidationTime/2;
@@ -129,6 +129,7 @@ int main(int argc, char** args)
 		}
 		else if(problemsSolved[i]==8)
 		{
+			myProperties.porosity=myProperties.porosity/2;
 			myProperties.macroPorosity=myProperties.porosity;
 			myProperties.macroPermeability=myProperties.permeability;
 			cout << "Solved Terzaghi (double porosity) for: \n";

@@ -881,11 +881,11 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 
 	// Grid parameters
 	int Nx=meshSize;
-	int Ny=6*meshSize;
+	int Ny=meshSize;
 
 	// Reservoir parameters
 	double Lx=1; // [m]
-	double Ly=6; // [m]
+	double Ly=1; // [m]
 
 	vector<vector<double>> sCoordinates=
 	{
@@ -984,26 +984,28 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	vField=myProblem.vDisplacementField;
 	pField=myProblem.pressureField;
 	pMField=myProblem.pressureField;
+	double QM=1/(phiM*c_f+(alpha-phiM)*c_s);
 	
 /*		LINEAR SYSTEM'S COEFFICIENTS MATRIX ASSEMBLY
 	----------------------------------------------------------------*/
 
 	// Constructor
-	coefficientsAssembly myCoefficients(bcType,Nu,Nv,2*NP,idU,idV,idP,cooU,cooV,cooP,
+	coefficientsAssembly myCoefficients(bcType,Nu,Nv,NP,idU,idV,idP,cooU,cooV,cooP,
 		horFaceStatus,verFaceStatus,gridType,interpScheme);
 
 	// Coefficients matrix assembly
-	// myCoefficients.assemblyCoefficientsMatrix(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,rho,g);
+	myCoefficients.assemblyMacroPorosityMatrix(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,phi,phiM,KM,QM);
 
 	// Passing variables
-	// vector<vector<double>> coefficientsMatrix;swap(coefficientsMatrix,
-	// 	myCoefficients.coefficientsMatrix);
-	// vector<double> sparseCoefficientsRow;swap(sparseCoefficientsRow,
-	// 	myCoefficients.sparseCoefficientsRow);
-	// vector<double> sparseCoefficientsColumn;swap(sparseCoefficientsColumn,
-	// 	myCoefficients.sparseCoefficientsColumn);
-	// vector<double> sparseCoefficientsValue;swap(sparseCoefficientsValue,
-	// 	myCoefficients.sparseCoefficientsValue);
+	vector<vector<double>> coefficientsMatrix;swap(coefficientsMatrix,
+		myCoefficients.coefficientsMatrix);
+	vector<double> sparseCoefficientsRow;swap(sparseCoefficientsRow,
+		myCoefficients.sparseCoefficientsRow);
+	vector<double> sparseCoefficientsColumn;swap(sparseCoefficientsColumn,
+		myCoefficients.sparseCoefficientsColumn);
+	vector<double> sparseCoefficientsValue;swap(sparseCoefficientsValue,
+		myCoefficients.sparseCoefficientsValue);
+	printsparse(coefficientsMatrix);newline();
 
 /*		LINEAR SYSTEM SOLVER
 	----------------------------------------------------------------*
