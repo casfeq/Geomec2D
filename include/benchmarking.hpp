@@ -1023,6 +1023,9 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	// Increase the independent terms array
 	myIndependentTerms.increaseMacroIndependentTermsArray();
 
+	// Creates macro-pressure field
+	myLinearSystemSolver.createMacroPressureField(pMField);
+
 	// LU Factorization of coefficientsMatrix
 	ierr=myLinearSystemSolver.coefficientsMatrixLUFactorization();CHKERRQ(ierr);
 	
@@ -1044,11 +1047,13 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 		ierr=myLinearSystemSolver.setRHSValue(independentTermsArray);CHKERRQ(ierr);
 		ierr=myLinearSystemSolver.solveLinearSystem();CHKERRQ(ierr);
 		ierr=myLinearSystemSolver.setFieldValue(timeStep+1);CHKERRQ(ierr);
+		ierr=myLinearSystemSolver.setMacroFieldValue(timeStep+1);CHKERRQ(ierr);
 
 		// Passing solutions
 		uField=myLinearSystemSolver.uField;
 		vField=myLinearSystemSolver.vField;
 		pField=myLinearSystemSolver.pField;
+		pMField=myLinearSystemSolver.pMField;
 		ierr=myLinearSystemSolver.zeroPETScArrays();CHKERRQ(ierr);
 
 		cout << timeStep+1<< "\r";
@@ -1076,14 +1081,14 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 
 	// Constructor
 	dataProcessing myDataProcessing(idU,idV,idP,uField,vField,pField,gridType,interpScheme,dx,dy);
+	myDataProcessing.storeMacroPressure3DField(idP,pMField);
 
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
-		myDataProcessing.exportTerzaghiAnalyticalSolution(Ly,alpha,Q,rho,g,rho_f,
-			longitudinalModulus,sigmab,dt,exportedTimeSteps[i],consolidationCoefficient,pairName);
 		myDataProcessing.exportTerzaghiNumericalSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportMacroPressureSolution(dt,exportedTimeSteps[i],pairName);
 	}
-	/**/
+
 	return ierr;
 };

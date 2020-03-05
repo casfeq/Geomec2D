@@ -7,7 +7,7 @@ mkdir -p build
 rm -rf plot/*
 rm -rf export/*
 
-export sourceName="mainSolution"
+export sourceName="mainDouble"
 
 # COMPILE
 cd build
@@ -22,7 +22,7 @@ cd build
 echo "-- Solving benchmarking problems"
 ./$sourceName "staggered" "NA" "gulfMexicoShale" 8
 cd ..
-# echo "-- Plotting results"
-# python3 -W ignore ./postpro/terzaghiPlotSolution.py "gulfMexicoShale"
-# echo ""
+echo "-- Plotting results"
+python3 -W ignore ./postpro/doublePorosityPlotStability.py "gulfMexicoShale"
+echo ""
 # rm -rf export/*
