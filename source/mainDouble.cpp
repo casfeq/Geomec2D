@@ -20,10 +20,6 @@ int main(int argc, char** args)
 	string myGridType=args[1];
 	string myInterpScheme=args[2];
 	string myMedium=args[3];
-	vector<int> problemsSolved;
-	problemsSolved.push_back(atoi(args[4])/100%10);
-	problemsSolved.push_back(atoi(args[4])/10%10);
-	problemsSolved.push_back(atoi(args[4])%10);
 
 /*		PROPERTIES IMPORT
 	----------------------------------------------------------------*/	
@@ -48,10 +44,10 @@ int main(int argc, char** args)
 	inFile >> myProperties.fluidViscosity;
 	inFile >> myProperties.fluidDensity;
 	inFile.close();	
-	myProperties.macroPorosity=myProperties.porosity*99./100.;
-	myProperties.porosity=myProperties.porosity/100.;
-	myProperties.macroPermeability=myProperties.permeability*999./1000.;
-	myProperties.permeability=myProperties.permeability/1000.;
+	myProperties.macroPorosity=myProperties.porosity*9./10.;
+	myProperties.porosity=myProperties.porosity/10.;
+	myProperties.macroPermeability=myProperties.permeability*99./100.;
+	myProperties.permeability=myProperties.permeability/100.;
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/
@@ -80,9 +76,7 @@ int main(int argc, char** args)
 	vector<double> timestepSize=
 	{
 		0.25,
-		0.10,
-		0.05,
-		0.01
+		0.10
 	};
 
 /*		OTHER PARAMETERS

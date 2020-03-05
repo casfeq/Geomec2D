@@ -25,68 +25,133 @@ solvedPairs.pop(0)
 # Get parent directory
 parentDirectory=pathlib.Path(__file__).resolve().parents[1]
 
-# Get run info
-runInfo=np.genfromtxt(parentDirectory/"export/solveTerzaghiRunInfo.txt",dtype='str')
-
-# Get grid type for this run
-gridType=runInfo[0]
-
-# Get interpolation scheme for this run if not staggered grid
-if gridType!="staggered":
-	interpScheme=runInfo[1]
-	gridType=gridType+"+"+interpScheme
-
 # Get dt
 fileName=str(parentDirectory)+"/export/solveTerzaghi_"+solvedPairs[0]+"RunInfo.txt"
 dt=np.loadtxt(fname=fileName)
 
 # Define marker colors
 colors=[]
+colors.append("#414042")
 colors.append("#fd411e")
 colors.append("#f075e6")
 colors.append("#0d75f8")
 colors.append("#02c14d")
 
+# Define grids used
+gridType=[]
+gridType.append("staggered")
+gridType.append("collocated+CDS")
+gridType.append("collocated+1DPIS")
+gridType.append("collocated+I2DPIS")
+gridType.append("collocated+C2DPIS")
+
 # Define figure's name
-plotName="plot/terzaghiStability_p_"+gridType+"-grid.png"
+plotName="plot/doublePorosity.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,9))
-fig.subplots_adjust(top=0.90,bottom=0.05,left=0.08,right=0.96,wspace=0.4,hspace=0.3)
+fig.subplots_adjust(top=0.90,bottom=0.05,left=0.08,right=0.96,wspace=0.2,hspace=0.25)
 
-# Loop for adding pressure subplots
-ax=[]
-for i in range(0,len(dt)):
+# Add subplot 1 for micro-pressure
+fig.add_subplot(2,2,2)
+plt.subplot(2,2,2).set_title("Micro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
 
-	# Add subplot
-	ax.append(fig.add_subplot(2,2,i+1))
-
-	# Plot pressure
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+# Plot micro-pressure 1
+for j in range(0,len(gridType)):
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+format(dt[0], \
+		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	pNumeric=np.loadtxt(fname=fileName)
 	pNumeric[:]=[x/1000 for x in pNumeric]
 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-		format(dt[i],".6f")+"_timeStep=1_"+gridType+"-grid.txt"
+		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[i],ms=10,mec='k',mew=0.5, \
-		label="$\Delta$t="+str(format(dt[i],'.2e'))+" s")
+	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5, \
+		label=gridType[j])
 
-	# Set axes' scale and limits
-	axes=plt.gca()
-	axes.set_xlim([0,None])
-	axes.set_ylim([0,None])
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_xlim([0,None])
+axes.set_ylim([0,None])
 
-	# Set axes' labels
-	plt.xlabel('Pressure (kPa)')
-	plt.ylabel('Height (m)')
-	plt.grid(which='major',axis='both')
+# Set axes' labels
+plt.xlabel('Pressure (kPa)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
 
-# Subplots' titles
-ax[0].title.set_text('25% of consolidation time')
-ax[1].title.set_text('10% of consolidation time')
-ax[2].title.set_text('5% of consolidation time')
-ax[3].title.set_text('1% of consolidation time')
+# Add subplot 2 for micro-pressure
+fig.add_subplot(2,2,4)
+plt.subplot(2,2,4).set_title("Micro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+
+# Plot micro-pressure 2
+for j in range(0,len(gridType)):
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+format(dt[1], \
+		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	pNumeric=np.loadtxt(fname=fileName)
+	pNumeric[:]=[x/1000 for x in pNumeric]
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
+		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	yNumeric=np.loadtxt(fname=fileName)
+	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_xlim([0,None])
+axes.set_ylim([0,None])
+
+# Set axes' labels
+plt.xlabel('Pressure (kPa)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
+
+# Add subplot 1 for macro-pressure
+fig.add_subplot(2,2,1)
+plt.subplot(2,2,1).set_title("Macro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
+
+# Plot macro-pressure 1
+for j in range(0,len(gridType)):
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_dt="+ \
+		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	pNumeric=np.loadtxt(fname=fileName)
+	pNumeric[:]=[x/1000 for x in pNumeric]
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
+		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	yNumeric=np.loadtxt(fname=fileName)
+	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_xlim([0,None])
+axes.set_ylim([0,None])
+
+# Set axes' labels
+plt.xlabel('Pressure (kPa)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
+
+# Add subplot 2 for macro-pressure
+fig.add_subplot(2,2,3)
+plt.subplot(2,2,3).set_title("Macro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+
+# Plot macro-pressure 2
+for j in range(0,len(gridType)):
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_dt="+ \
+		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	pNumeric=np.loadtxt(fname=fileName)
+	pNumeric[:]=[x/1000 for x in pNumeric]
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
+		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	yNumeric=np.loadtxt(fname=fileName)
+	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_xlim([0,None])
+axes.set_ylim([0,None])
+
+# Set axes' labels
+plt.xlabel('Pressure (kPa)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
 
 # Add figure's legend
 fig.legend(loc='upper center',ncol=3)

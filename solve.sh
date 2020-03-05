@@ -20,9 +20,14 @@ echo ""
 rm -rf export/*
 cd build
 echo "-- Solving benchmarking problems"
-./$sourceName "staggered" "NA" "gulfMexicoShale" 8
+./$sourceName "staggered" "NA" "softSediment"
+./$sourceName "collocated" "CDS" "softSediment"
+./$sourceName "collocated" "1DPIS" "softSediment"
+./$sourceName "collocated" "I2DPIS" "softSediment"
+./$sourceName "collocated" "C2DPIS" "softSediment"
+
 cd ..
 echo "-- Plotting results"
-python3 -W ignore ./postpro/doublePorosityPlotStability.py "gulfMexicoShale"
+python3 -W ignore ./postpro/doublePorosityPlotStability.py "softSediment"
 echo ""
 # rm -rf export/*
