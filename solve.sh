@@ -20,7 +20,7 @@ echo ""
 rm -rf export/*
 cd build
 echo "-- Solving benchmarking problems"
-./$sourceName "staggered" "NA" "gulfMexicoShale" 8
+./$sourceName "collocated" "CDS" "gulfMexicoShale" 8
 cd ..
 # echo "-- Plotting results"
 # python3 -W ignore ./postpro/terzaghiPlotSolution.py "gulfMexicoShale"
