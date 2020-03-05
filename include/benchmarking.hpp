@@ -881,11 +881,11 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 
 	// Grid parameters
 	int Nx=meshSize;
-	int Ny=meshSize;
+	int Ny=6*meshSize;
 
 	// Reservoir parameters
 	double Lx=1; // [m]
-	double Ly=1; // [m]
+	double Ly=6; // [m]
 
 	vector<vector<double>> sCoordinates=
 	{
@@ -1058,7 +1058,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	cout << "(h=" << h << ", dt=" << dt << ")\n";
 
 /*		DATA PROCESSING
-	----------------------------------------------------------------*
+	----------------------------------------------------------------*/
 	
 	// Variables declaration
 	vector<int> exportedTimeSteps=

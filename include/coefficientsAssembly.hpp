@@ -109,6 +109,7 @@ public:
 	void add1DPISMacroFluidFlowToContinuity(double,double,double,double,double,double);
 	void addI2DPISMacroFluidFlowToContinuity(double,double,double,double,double);
 	void addC2DPISMacroFluidFlowToContinuity(double,double,double,double,double,double);
+	void addmacroPressuretoContinuity(double,double,double);
 	void addMacroBCToContinuity();
 	void addMacroDirichletBCToContinuity(int);
 
@@ -2696,6 +2697,7 @@ void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, dou
 {
 	double alpham=alpha*phi/(1-phi-phiM);
 	double alphaM=alpha*phiM/(1-phi-phiM);
+	double propCoef=3*0.4/(phi*phi);
 	NPM=NP;
 
 	increaseMacroPorosityCoefficientsMatrixSize();
@@ -2715,6 +2717,7 @@ void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, dou
 	addMacroFluidFlowToContinuity(dx,dy,dt,KM,mu_f,alphaM,G,lambda);
 	addDisplacementToContinuity(dx,dy,dt,alpham,G,lambda);
 	addMacroDisplacementToContinuity(dx,dy,dt,alphaM,G,lambda);
+	addmacroPressuretoContinuity(propCoef,K,mu_f);
 	addBCToContinuity();
 	addMacroBCToContinuity();
 	assemblySparseMatrix(coefficientsMatrix);
@@ -4120,6 +4123,28 @@ void coefficientsAssembly::addC2DPISMacroFluidFlowToContinuity(double dx, double
 		}
 	}
 	
+	return;
+}
+
+void coefficientsAssembly::addmacroPressuretoContinuity(double propCoef, double K, double mu_f)
+{
+	int i, j;
+	int P_P, PM_P;
+
+	for(int FVCounter=0; FVCounter<NP; FVCounter++)
+	{
+		i=pressureFVCoordinates[FVCounter][0]-1;
+		j=pressureFVCoordinates[FVCounter][1]-1;
+
+		P_P=getPressureFVPosition(i,j);
+		PM_P=getMacroPressureFVPosition(i,j);
+
+		coefficientsMatrix[P_P][P_P]-=-propCoef*K/mu_f;
+		coefficientsMatrix[P_P][PM_P]-=propCoef*K/mu_f;
+		coefficientsMatrix[PM_P][P_P]-=propCoef*K/mu_f;
+		coefficientsMatrix[PM_P][PM_P]-=-propCoef*K/mu_f;
+	}
+
 	return;
 }
 
