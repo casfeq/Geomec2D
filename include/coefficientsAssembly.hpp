@@ -109,7 +109,7 @@ public:
 	void add1DPISMacroFluidFlowToContinuity(double,double,double,double,double,double);
 	void addI2DPISMacroFluidFlowToContinuity(double,double,double,double,double);
 	void addC2DPISMacroFluidFlowToContinuity(double,double,double,double,double,double);
-	void addmacroPressuretoContinuity(double,double,double);
+	void addMacroPressuretoContinuity(double,double,double);
 	void addMacroBCToContinuity();
 	void addMacroDirichletBCToContinuity(int);
 
@@ -2697,7 +2697,7 @@ void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, dou
 {
 	double alpham=alpha*phi/(1-phi-phiM);
 	double alphaM=alpha*phiM/(1-phi-phiM);
-	double propCoef=3*0.4/(phi*phi);
+	double propCoef=11*0.4/min(phi*phi,phiM*phiM);
 	NPM=NP;
 
 	increaseMacroPorosityCoefficientsMatrixSize();
@@ -2706,20 +2706,23 @@ void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, dou
 	addPressureToXMomentum(dy,alpham);
 	addMacroPressureToXMomentum(dy,alphaM);
 	addBCToXMomentum(dx,dy,G);
+
 	addUDisplacementToYMomentum(dx,dy,G,lambda);
 	addVDisplacementToYMomentum(dx,dy,G,lambda);
 	addPressureToYMomentum(dx,alpham);
 	addMacroPressureToYMomentum(dx,alphaM);
 	addBCToYMomentum(dx,dy,G);
+
 	addTransientToContinuity(dx,dy,dt,Q);
 	addMacroTransientToContinuity(dx,dy,dt,QM);
 	addFluidFlowToContinuity(dx,dy,dt,K,mu_f,alpham,G,lambda);
 	addMacroFluidFlowToContinuity(dx,dy,dt,KM,mu_f,alphaM,G,lambda);
 	addDisplacementToContinuity(dx,dy,dt,alpham,G,lambda);
 	addMacroDisplacementToContinuity(dx,dy,dt,alphaM,G,lambda);
-	addmacroPressuretoContinuity(propCoef,K,mu_f);
+	addMacroPressuretoContinuity(propCoef,K,mu_f);
 	addBCToContinuity();
 	addMacroBCToContinuity();
+
 	assemblySparseMatrix(coefficientsMatrix);
 
 	return;
@@ -3587,14 +3590,14 @@ void coefficientsAssembly::addMacroFluidFlowToContinuity(double dx, double dy, d
 	double mu_f, double alpha, double G, double lambda)
 {
 	if(gridType=="staggered") addStaggeredMacroFluidFlowToContinuity(dx,dy,K,mu_f);
-	// else if(gridType=="collocated") 
-	// {
-	// 	addCollocatedMacroFluidFlowToContinuity(dx,dy,K,mu_f);
+	else if(gridType=="collocated") 
+	{
+		addCollocatedMacroFluidFlowToContinuity(dx,dy,K,mu_f);
 
-	// 	if(interpScheme=="1DPIS") add1DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G,lambda);
-	// 	if(interpScheme=="I2DPIS") addI2DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G);
-	// 	if(interpScheme=="C2DPIS") addC2DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G,lambda);
-	// }
+		if(interpScheme=="1DPIS") add1DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G,lambda);
+		if(interpScheme=="I2DPIS") addI2DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G);
+		if(interpScheme=="C2DPIS") addC2DPISMacroFluidFlowToContinuity(dx,dy,dt,alpha,G,lambda);
+	}
 
 	return;
 }
@@ -3691,11 +3694,11 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 		i=pressureFVCoordinates[FVCounter][0]-1;
 		j=pressureFVCoordinates[FVCounter][1]-1;
 
-		P_P=getPressureFVPosition(i,j);
+		P_P=getMacroPressureFVPosition(i,j);
 
 		if(i==0) // Northern border
 		{
-			P_S=getPressureFVPosition(i+1,j);
+			P_S=getMacroPressureFVPosition(i+1,j);
 
 			if(j==0 || j==pressureFVIndex[0].size()-1) value=0.5;
 
@@ -3706,7 +3709,7 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 		}
 		else if(i==pressureFVIndex.size()-1) // Southern border
 		{
-			P_N=getPressureFVPosition(i-1,j);
+			P_N=getMacroPressureFVPosition(i-1,j);
 
 			if(j==0 || j==pressureFVIndex[0].size()-1) value=0.5;
 
@@ -3717,8 +3720,8 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 		}
 		else
 		{
-			P_N=getPressureFVPosition(i-1,j);
-			P_S=getPressureFVPosition(i+1,j);
+			P_N=getMacroPressureFVPosition(i-1,j);
+			P_S=getMacroPressureFVPosition(i+1,j);
 
 			if(j==0 || j==pressureFVIndex[0].size()-1) value=0.5;
 
@@ -3731,7 +3734,7 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 
 		if(j==0) // Western border
 		{
-			P_E=getPressureFVPosition(i,j+1);
+			P_E=getMacroPressureFVPosition(i,j+1);
 
 			if(i==0 || i==pressureFVIndex.size()-1) value=0.5;
 
@@ -3742,7 +3745,7 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 		}
 		else if(j==pressureFVIndex[0].size()-1) // Eastern border
 		{
-			P_W=getPressureFVPosition(i,j-1);
+			P_W=getMacroPressureFVPosition(i,j-1);
 
 			if(i==0 || i==pressureFVIndex.size()-1) value=0.5;
 
@@ -3753,8 +3756,8 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 		}
 		else
 		{
-			P_E=getPressureFVPosition(i,j+1);
-			P_W=getPressureFVPosition(i,j-1);
+			P_E=getMacroPressureFVPosition(i,j+1);
+			P_W=getMacroPressureFVPosition(i,j-1);
 
 			if(i==0 || i==pressureFVIndex.size()-1) value=0.5;
 
@@ -4126,7 +4129,7 @@ void coefficientsAssembly::addC2DPISMacroFluidFlowToContinuity(double dx, double
 	return;
 }
 
-void coefficientsAssembly::addmacroPressuretoContinuity(double propCoef, double K, double mu_f)
+void coefficientsAssembly::addMacroPressuretoContinuity(double propCoef, double K, double mu_f)
 {
 	int i, j;
 	int P_P, PM_P;

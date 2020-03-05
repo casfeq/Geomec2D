@@ -46,8 +46,8 @@ int main(int argc, char** args)
 	inFile.close();	
 	myProperties.macroPorosity=myProperties.porosity*9./10.;
 	myProperties.porosity=myProperties.porosity/10.;
-	myProperties.macroPermeability=myProperties.permeability*99./100.;
-	myProperties.permeability=myProperties.permeability/100.;
+	myProperties.macroPermeability=myProperties.permeability*999./1000.;
+	myProperties.permeability=myProperties.permeability/1000.;
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/
@@ -75,8 +75,8 @@ int main(int argc, char** args)
 	double dt;
 	vector<double> timestepSize=
 	{
-		0.25,
-		0.10
+		0.05,
+		0.01
 	};
 
 /*		OTHER PARAMETERS
