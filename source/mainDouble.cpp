@@ -66,15 +66,15 @@ int main(int argc, char** args)
 		alpha*alpha/longitudinalModulus);
 
 	int Nt=2;
-	int mesh=3;
+	int mesh=5;
 	double h=1./mesh;
 	double consolidationTime=h*h/consolidationCoefficient;
 	double Lt;
 	double dt;
 	vector<double> timestepSize=
 	{
-		0.25,
-		0.10
+		0.50,
+		0.25
 	};
 
 /*		OTHER PARAMETERS

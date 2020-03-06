@@ -2140,8 +2140,8 @@ void independentTermsAssembly::addCollocatedMacroPressure(double Q, double dx, d
 	else if(interpScheme=="I2DPIS")
 	{
 		addI2DPISMacroDisplacement(dx,dy,dt,alphaM,uField,vField,timeStep);
-		// addI2DPISMacroPressureToMicro(dx,dy,dt,alphaM,G,pField,timeStep);
-		addI2DPISMacroPressureToMacro(dx,dy,dt,alphaM,G,pField,timeStep);
+		addI2DPISMacroPressureToMicro(dx,dy,dt,alphaM,G,pField,timeStep);
+		// addI2DPISMacroPressureToMacro(dx,dy,dt,alphaM,G,pField,timeStep);
 		// addI2DPISMicroPressureToMacro(dx,dy,dt,alpham,G,pField,timeStep);
 	}
 
