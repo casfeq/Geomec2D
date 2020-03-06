@@ -26,6 +26,7 @@ public:
 	vector<vector<vector<double>>> uDisplacement3DField;
 	vector<vector<vector<double>>> vDisplacement3DField;
 	vector<vector<vector<double>>> pressure3DField;
+	vector<vector<vector<double>>> macroPressure3DField;
 	vector<vector<vector<double>>> strain3DField;
 	string gridType;
 	vector<double> mandelRoots;
@@ -72,6 +73,9 @@ public:
 		double,double);
 	void exportMandelAnalyticalSolution(double,double,double,double,double,double,double,double,
 		double,double,double,double,int,string);
+	void storeMacroPressure3DField(vector<vector<int>>,vector<vector<double>>);
+	void exportMacroPressureSolution(double,double,double,int,string);
+
 
 	// Constructor
 	dataProcessing(vector<vector<int>>,vector<vector<int>>,vector<vector<int>>,
@@ -128,20 +132,23 @@ void dataProcessing::resize3DFields(vector<vector<int>> idU, vector<vector<int>>
 			vDisplacement3DField[i][j].resize(aisleNo);
 	}
 
-	// Resize pressure3DField and strain3DField
+	// Resize pressure3DField, strain3DField and macroPressure3DField
 	rowNo=idP.size();
 	colNo=idP[0].size();
 	pressure3DField.resize(rowNo);
 	strain3DField.resize(rowNo);
+	macroPressure3DField.resize(rowNo);
 	for(int i=0; i<rowNo; i++)
 	{
 		pressure3DField[i].resize(colNo);
 		strain3DField[i].resize(colNo);
+		macroPressure3DField[i].resize(colNo);
 
 		for(int j=0; j<colNo; j++)
 		{
 			pressure3DField[i][j].resize(aisleNo);
 			strain3DField[i][j].resize(aisleNo);
+			macroPressure3DField[i][j].resize(aisleNo);
 		}
 	}
 
@@ -1021,6 +1028,91 @@ void dataProcessing::exportMandelAnalyticalSolution(double L, double H, double c
 
 		myFile.close();
 	}
+
+	return;
+}
+
+void dataProcessing::storeMacroPressure3DField(vector<vector<int>> idP,
+	vector<vector<double>> pField)
+{	
+	int rowNo=idP.size();
+	int colNo=idP[0].size();
+	int position;
+	double value;
+
+	for(int i=0; i<rowNo; i++)
+	{
+		for(int j=0; j<colNo; j++)
+		{
+			position=idP[i][j]-1;
+
+			for(int k=0; k<aisleNo; k++)
+			{
+				value=pField[position][k];
+				macroPressure3DField[i][j][k]=value;
+			}
+		}
+	}
+
+	return;
+}
+
+void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly, int timeStep,
+	string pairName)
+{
+	string fieldName;
+	vector<double> yCoordP;yCoordP.resize(pressure3DField.size());
+	vector<double> pField;pField.resize(pressure3DField.size());
+	vector<double> pMField;pMField.resize(macroPressure3DField.size());
+
+	// Exports yCoordP
+	if(gridType=="staggered") yCoordP[0]=Ly-dy/2;
+	else yCoordP[0]=Ly;
+	for(int i=1; i<yCoordP.size(); i++) yCoordP[i]=yCoordP[i-1]-dy;
+	fieldName="terzaghi_"+pairName+"_YPNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	// if(gridType=="staggered") yCoordP.insert(yCoordP.begin(),Ly);
+	export1DFieldToTxt(yCoordP,fieldName);
+
+	// Exports pField
+	if(pressure3DField[0].size()%2==0)
+		for(int i=0; i<pField.size(); i++)
+		{
+			int midCols=pressure3DField[0].size()/2;
+			pField[i]=0;
+			pField[i]+=pressure3DField[i][midCols][timeStep]/2;
+			pField[i]+=pressure3DField[i][midCols-1][timeStep]/2;
+		}
+	else
+		for(int i=0; i<pField.size(); i++)
+		{
+			int midCols=pressure3DField[0].size()/2;
+			pField[i]=0;
+			pField[i]+=pressure3DField[i][midCols][timeStep];
+		}
+	fieldName="terzaghi_"+pairName+"_PNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	// if(gridType=="staggered") pField.insert(pField.begin(),0);
+	export1DFieldToTxt(pField,fieldName);
+
+	// Exports pMField
+	if(macroPressure3DField[0].size()%2==0)
+		for(int i=0; i<pMField.size(); i++)
+		{
+			int midCols=macroPressure3DField[0].size()/2;
+			pMField[i]=0;
+			pMField[i]+=macroPressure3DField[i][midCols][timeStep]/2;
+			pMField[i]+=macroPressure3DField[i][midCols-1][timeStep]/2;
+		}
+	else
+		for(int i=0; i<pMField.size(); i++)
+		{
+			int midCols=macroPressure3DField[0].size()/2;
+			pMField[i]=0;
+			pMField[i]+=macroPressure3DField[i][midCols][timeStep];
+		}
+	fieldName="terzaghi_"+pairName+"_MacroPNumeric_dt="+to_string(dt)+"_timeStep="+
+		to_string(timeStep);
+	// if(gridType=="staggered") pMField.insert(pMField.begin(),0);
+	export1DFieldToTxt(pMField,fieldName);
 
 	return;
 }

@@ -31,6 +31,7 @@ public:
 	vector<vector<double>> uField;
 	vector<vector<double>> vField;
 	vector<vector<double>> pField;
+	vector<vector<double>> pMField;
 	int Nu;
 	int Nv;
 	int NP;
@@ -61,6 +62,8 @@ public:
 	double mandelErrorCalculation(string,double,double,int,double,double,double,double);
 	double mandelStaggeredErrorCalculation(double,double,int,double,double,double,double);
 	double mandelCollocatedErrorCalculation(double,double,int,double,double,double,double);
+	int createMacroPressureField(vector<vector<double>>);
+	int setMacroFieldValue(int);
 
 	// Constructor
 	linearSystemSolver(vector<vector<double>>,vector<double>,vector<double>,vector<double>,
@@ -356,4 +359,24 @@ double linearSystemSolver::mandelCollocatedErrorCalculation(double dx, double dy
 	double error=stressTrial*dx-F;
 
 	return error;
+}
+
+int linearSystemSolver::createMacroPressureField(vector<vector<double>> pressureField)
+{
+	pMField=pressureField;
+
+	return ierr;
+}
+
+int linearSystemSolver::setMacroFieldValue(int timeStep)
+{
+	PetscScalar value;
+
+	for(int i=Nu+Nv+NP; i<Nu+Nv+NP+NP; i++)
+	{
+		ierr=VecGetValues(linearSystemSolutionPETSc,1,&i,&value);CHKERRQ(ierr);
+		pMField[i-Nu-Nv-NP][timeStep]=value;
+	}
+
+	return ierr;
 }
