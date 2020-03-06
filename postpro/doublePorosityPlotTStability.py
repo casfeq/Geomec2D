@@ -53,7 +53,7 @@ gridType.append("collocated+CDS")
 gridType.append("collocated+I2DPIS")
 
 # Define figure's name
-plotName="plot/doublePorosity.png"
+plotName="plot/doublePorosity_dt_stability.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,9))
@@ -61,7 +61,7 @@ fig.subplots_adjust(top=0.93,bottom=0.05,left=0.08,right=0.96,wspace=0.2,hspace=
 
 # Add subplot 1 for micro-pressure
 fig.add_subplot(2,2,2)
-plt.subplot(2,2,2).set_title("Micro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,2).set_title("Micro-pores ($\Delta t=$"+str(format(dt[0],'.2e'))+" s)",fontsize=10)
 
 # Plot micro-pressure 1
 for j in range(0,len(gridType)):
@@ -87,7 +87,7 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 2 for micro-pressure
 fig.add_subplot(2,2,4)
-plt.subplot(2,2,4).set_title("Micro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,4).set_title("Micro-pores ($\Delta t=$"+str(format(dt[1],'.2e'))+" s)",fontsize=10)
 
 # Plot micro-pressure 2
 for j in range(0,len(gridType)):
@@ -112,7 +112,7 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 1 for macro-pressure
 fig.add_subplot(2,2,1)
-plt.subplot(2,2,1).set_title("Macro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,1).set_title("Macro-pores ($\Delta t=$"+str(format(dt[0],'.2e'))+" s)",fontsize=10)
 
 # Plot macro-pressure 1
 for j in range(0,len(gridType)):
@@ -137,7 +137,7 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 2 for macro-pressure
 fig.add_subplot(2,2,3)
-plt.subplot(2,2,3).set_title("Macro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,3).set_title("Macro-pores ($\Delta t=$"+str(format(dt[1],'.2e'))+" s)",fontsize=10)
 
 # Plot macro-pressure 2
 for j in range(0,len(gridType)):

@@ -3327,8 +3327,8 @@ void coefficientsAssembly::addMacroFluidFlowToContinuity(double dx, double dy, d
 
 		if(interpScheme=="I2DPIS")
 		{
-			// addI2DPISMacroFluidFlowToMicroContinuity(dx,dy,dt,alphaM,G);
-			addI2DPISMacroFluidFlowToMacroContinuity(dx,dy,dt,alphaM,G);
+			addI2DPISMacroFluidFlowToMicroContinuity(dx,dy,dt,alphaM,G);
+			// addI2DPISMacroFluidFlowToMacroContinuity(dx,dy,dt,alphaM,G);
 			// addI2DPISMicroFluidFlowToMacroContinuity(dx,dy,dt,alpham,G);
 		}
 	}
