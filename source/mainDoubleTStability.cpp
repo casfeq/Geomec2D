@@ -66,16 +66,16 @@ int main(int argc, char** args)
 		alpha*alpha/longitudinalModulus);
 
 	int Nt=2;
-	vector<int> mesh=
+	int mesh=6;
+	double h=1./mesh;
+	vector<double> timestepSize=
 	{
-		3,
-		5
+		0.50,
+		0.25
 	};
-	double h=1./mesh[0];
-	double timestepSize=0.5;
 	double consolidationTime=h*h/consolidationCoefficient;
-	double Lt=(Nt-1)*(consolidationTime*timestepSize);
-	double dt=Lt/(Nt-1);
+	double Lt;
+	double dt;
 
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
@@ -97,11 +97,12 @@ int main(int argc, char** args)
 	cout << "Minimum time-step: " << consolidationTime/6 << "\n";
 	cout << "Solved Terzaghi (double-porosity) for: \n";
 	createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
-	for(int i=0; i<mesh.size(); i++)
+	for(int i=0; i<timestepSize.size(); i++)
 	{
-		h=1./mesh[i];
-		exportSolveRunInfo(h,"Terzaghi_"+myMedium);
-		ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh[i],Lt,g,columnLoad,myProperties);
+		Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
+		dt=Lt/(Nt-1);
+		exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
+		ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);
 			CHKERRQ(ierr);
 	}
 	
