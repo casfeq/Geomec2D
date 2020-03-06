@@ -919,7 +919,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	{
 		{-1,-1,-1,1},
 		{1,-1,-1,-1},
-		{-1,1,-1,1},
+		{-1,1,-1,-1},
 		{1,-1,-1,-1}
 	};
 
@@ -1086,7 +1086,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
-		myDataProcessing.exportMacroPressureSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportMacroPressureSolution(dy,h,Ly,exportedTimeSteps[i],pairName);
 	}
 
 	return ierr;

@@ -25,9 +25,9 @@ solvedPairs.pop(0)
 # Get parent directory
 parentDirectory=pathlib.Path(__file__).resolve().parents[1]
 
-# Get dt
+# Get h
 fileName=str(parentDirectory)+"/export/solveTerzaghi_"+solvedPairs[0]+"RunInfo.txt"
-dt=np.loadtxt(fname=fileName)
+h=np.loadtxt(fname=fileName)
 
 # Define plot style
 plotstyle=[]
@@ -61,16 +61,16 @@ fig.subplots_adjust(top=0.93,bottom=0.05,left=0.08,right=0.96,wspace=0.2,hspace=
 
 # Add subplot 1 for micro-pressure
 fig.add_subplot(2,2,2)
-plt.subplot(2,2,2).set_title("Micro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,2).set_title("Micro-pores ($h="+str(format(h[0],'.3f'))+" m)",fontsize=10)
 
 # Plot micro-pressure 1
 for j in range(0,len(gridType)):
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+format(dt[0], \
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_h="+format(h[0], \
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	pNumeric=np.loadtxt(fname=fileName)
 	pNumeric[:]=[x/1000 for x in pNumeric]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_h="+ \
+		format(h[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25, \
 		label=gridType[j])
@@ -87,16 +87,16 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 2 for micro-pressure
 fig.add_subplot(2,2,4)
-plt.subplot(2,2,4).set_title("Micro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,4).set_title("Micro-pores ($h="+str(format(h[1],'.3f'))+" m)",fontsize=10)
 
 # Plot micro-pressure 2
 for j in range(0,len(gridType)):
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+format(dt[1], \
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_h="+format(h[1], \
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	pNumeric=np.loadtxt(fname=fileName)
 	pNumeric[:]=[x/1000 for x in pNumeric]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_h="+ \
+		format(h[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 
@@ -112,16 +112,16 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 1 for macro-pressure
 fig.add_subplot(2,2,1)
-plt.subplot(2,2,1).set_title("Macro-pores ($\Delta$t="+str(format(dt[0],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,1).set_title("Macro-pores ($h="+str(format(h[0],'.3f'))+" m)",fontsize=10)
 
 # Plot macro-pressure 1
 for j in range(0,len(gridType)):
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_dt="+ \
-		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_h="+ \
+		format(h[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	pNumeric=np.loadtxt(fname=fileName)
 	pNumeric[:]=[x/1000 for x in pNumeric]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_h="+ \
+		format(h[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 
@@ -137,16 +137,16 @@ plt.grid(which='major',axis='both')
 
 # Add subplot 2 for macro-pressure
 fig.add_subplot(2,2,3)
-plt.subplot(2,2,3).set_title("Macro-pores ($\Delta$t="+str(format(dt[1],'.2e'))+" s)",fontsize=10)
+plt.subplot(2,2,3).set_title("Macro-pores ($h="+str(format(h[1],'.3f'))+" m)",fontsize=10)
 
 # Plot macro-pressure 2
 for j in range(0,len(gridType)):
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_dt="+ \
-		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_h="+ \
+		format(h[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	pNumeric=np.loadtxt(fname=fileName)
 	pNumeric[:]=[x/1000 for x in pNumeric]
-	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
+	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_h="+ \
+		format(h[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
 	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 

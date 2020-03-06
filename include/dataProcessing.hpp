@@ -1057,7 +1057,7 @@ void dataProcessing::storeMacroPressure3DField(vector<vector<int>> idP,
 	return;
 }
 
-void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly, int timeStep,
+void dataProcessing::exportMacroPressureSolution(double dy, double h, double Ly, int timeStep,
 	string pairName)
 {
 	string fieldName;
@@ -1069,7 +1069,7 @@ void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly
 	if(gridType=="staggered") yCoordP[0]=Ly-dy/2;
 	else yCoordP[0]=Ly;
 	for(int i=1; i<yCoordP.size(); i++) yCoordP[i]=yCoordP[i-1]-dy;
-	fieldName="terzaghi_"+pairName+"_YPNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	fieldName="terzaghi_"+pairName+"_YPNumeric_h="+to_string(h)+"_timeStep="+to_string(timeStep);
 	// if(gridType=="staggered") yCoordP.insert(yCoordP.begin(),Ly);
 	export1DFieldToTxt(yCoordP,fieldName);
 
@@ -1089,7 +1089,7 @@ void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly
 			pField[i]=0;
 			pField[i]+=pressure3DField[i][midCols][timeStep];
 		}
-	fieldName="terzaghi_"+pairName+"_PNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	fieldName="terzaghi_"+pairName+"_PNumeric_h="+to_string(h)+"_timeStep="+to_string(timeStep);
 	// if(gridType=="staggered") pField.insert(pField.begin(),0);
 	export1DFieldToTxt(pField,fieldName);
 
@@ -1109,7 +1109,7 @@ void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly
 			pMField[i]=0;
 			pMField[i]+=macroPressure3DField[i][midCols][timeStep];
 		}
-	fieldName="terzaghi_"+pairName+"_MacroPNumeric_dt="+to_string(dt)+"_timeStep="+
+	fieldName="terzaghi_"+pairName+"_MacroPNumeric_h="+to_string(h)+"_timeStep="+
 		to_string(timeStep);
 	// if(gridType=="staggered") pMField.insert(pMField.begin(),0);
 	export1DFieldToTxt(pMField,fieldName);

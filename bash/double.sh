@@ -1,4 +1,4 @@
-export sourceName="mainDouble"
+export sourceName="mainDoubleStability"
 
 # COMPILE
 cd build
