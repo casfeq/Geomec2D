@@ -43,11 +43,9 @@ int main(int argc, char** args)
 	inFile >> myProperties.permeability;
 	inFile >> myProperties.fluidViscosity;
 	inFile >> myProperties.fluidDensity;
-	inFile.close();	
-	myProperties.macroPorosity=myProperties.porosity*1./3.;
-	myProperties.porosity=myProperties.porosity*2./3.;
-	myProperties.macroPermeability=myProperties.permeability*999./1000.;
-	myProperties.permeability=myProperties.permeability/1000.;
+	inFile >> myProperties.macroPorosity;
+	inFile >> myProperties.macroPermeability;
+	inFile.close();
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/

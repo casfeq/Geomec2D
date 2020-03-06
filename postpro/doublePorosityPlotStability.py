@@ -77,7 +77,7 @@ for j in range(0,len(gridType)):
 
 # Set axes' scale and limits
 axes=plt.gca()
-axes.set_xlim([0,None])
+# axes.set_xlim([0,None])
 axes.set_ylim([0,None])
 
 # Set axes' labels
@@ -102,7 +102,7 @@ for j in range(0,len(gridType)):
 
 # Set axes' scale and limits
 axes=plt.gca()
-axes.set_xlim([0,None])
+# axes.set_xlim([0,None])
 axes.set_ylim([0,None])
 
 # Set axes' labels

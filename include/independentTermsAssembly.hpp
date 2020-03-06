@@ -76,17 +76,22 @@ public:
 		double,double,double,vector<vector<double>>,vector<vector<double>>,vector<vector<double>>,
 		vector<vector<double>>,int,double,double,double,double);
 	void increaseMacroIndependentTermsArray();
-	void addMacroPressure(double,double,double,double,double,double,double,vector<vector<double>>,
-		vector<vector<double>>,vector<vector<double>>,int,double,double);
+	void addMacroPressure(double,double,double,double,double,double,double,double,
+		vector<vector<double>>,vector<vector<double>>,vector<vector<double>>,int,double,double);
 	void addStaggeredMacroPressure(double,double,double,double,double,double,double,
 		vector<vector<double>>,vector<vector<double>>,vector<vector<double>>,int);
-	void addCollocatedMacroPressure(double,double,double,double,double,double,double,
+	void addCollocatedMacroPressure(double,double,double,double,double,double,double,double,
 		vector<vector<double>>,vector<vector<double>>,vector<vector<double>>,int,double,double);
 	void addCDSMacroDisplacement(double,double,double,double,vector<vector<double>>,
 		vector<vector<double>>,int);
 	void addI2DPISMacroDisplacement(double,double,double,double,vector<vector<double>>,
 		vector<vector<double>>,int);
-	void addI2DPISMacroPressure(double,double,double,double,double,vector<vector<double>>,int);
+	void addI2DPISMacroPressureToMicro(double,double,double,double,double,vector<vector<double>>,
+		int);
+	void addI2DPISMacroPressureToMacro(double,double,double,double,double,vector<vector<double>>,
+		int);
+	void addI2DPISMicroPressureToMacro(double,double,double,double,double,vector<vector<double>>,
+		int);
 
 	// Constructor
 	independentTermsAssembly(vector<vector<int>>,vector<vector<double>>,int,int,int,
@@ -1983,20 +1988,21 @@ void independentTermsAssembly::assemblyMacroIndependentTermsArray(double dx, dou
 	addUDisplacement(dx,dy,G,lambda);
 	addVDisplacement(dx,dy,G,lambda,rho,g);
 	addPressure(Q,dx,dy,dt,K,mu_f,alpham,uField,vField,pField,timeStep,G,lambda);
-	addMacroPressure(QM,dx,dy,dt,KM,mu_f,alphaM,uField,vField,pMField,timeStep,G,lambda);
+	addMacroPressure(QM,dx,dy,dt,KM,mu_f,alpham,alphaM,uField,vField,pMField,timeStep,G,lambda);
 	addBC(4);
 
 	return;
 }
 
 void independentTermsAssembly::addMacroPressure(double Q, double dx, double dy, double dt, double K,
-	double mu_f, double alpha, vector<vector<double>> uField, vector<vector<double>> vField,
-	vector<vector<double>> pField, int timeStep, double G, double lambda)
+	double mu_f, double alpham, double alphaM, vector<vector<double>> uField,
+	vector<vector<double>> vField, vector<vector<double>> pField, int timeStep, double G,
+	double lambda)
 {
-	if(gridType=="staggered") addStaggeredMacroPressure(Q,dx,dy,dt,K,mu_f,alpha,uField,vField,
+	if(gridType=="staggered") addStaggeredMacroPressure(Q,dx,dy,dt,K,mu_f,alphaM,uField,vField,
 		pField,timeStep);
-	else if(gridType=="collocated") addCollocatedMacroPressure(Q,dx,dy,dt,K,mu_f,alpha,uField,
-		vField,pField,timeStep,G,lambda);
+	else if(gridType=="collocated") addCollocatedMacroPressure(Q,dx,dy,dt,K,mu_f,alpham,alphaM,
+		uField,vField,pField,timeStep,G,lambda);
 
 	return;
 }
@@ -2079,7 +2085,7 @@ void independentTermsAssembly::addStaggeredMacroPressure(double Q, double dx, do
 }
 
 void independentTermsAssembly::addCollocatedMacroPressure(double Q, double dx, double dy, double dt,
-	double K, double mu_f, double alpha, vector<vector<double>> uField,
+	double K, double mu_f, double alpham, double alphaM, vector<vector<double>> uField,
 	vector<vector<double>> vField, vector<vector<double>> pField, int timeStep, double G,
 	double lambda)
 {
@@ -2130,11 +2136,13 @@ void independentTermsAssembly::addCollocatedMacroPressure(double Q, double dx, d
 		borderCounter=0;
 	}
 
-	if(interpScheme=="CDS") addCDSMacroDisplacement(dx,dy,dt,alpha,uField,vField,timeStep);
+	if(interpScheme=="CDS") addCDSMacroDisplacement(dx,dy,dt,alphaM,uField,vField,timeStep);
 	else if(interpScheme=="I2DPIS")
 	{
-		addI2DPISMacroDisplacement(dx,dy,dt,alpha,uField,vField,timeStep);
-		addI2DPISMacroPressure(dx,dy,dt,alpha,G,pField,timeStep);
+		addI2DPISMacroDisplacement(dx,dy,dt,alphaM,uField,vField,timeStep);
+		// addI2DPISMacroPressureToMicro(dx,dy,dt,alphaM,G,pField,timeStep);
+		addI2DPISMacroPressureToMacro(dx,dy,dt,alphaM,G,pField,timeStep);
+		// addI2DPISMicroPressureToMacro(dx,dy,dt,alpham,G,pField,timeStep);
 	}
 
 	return;
@@ -2517,8 +2525,8 @@ void independentTermsAssembly::addI2DPISMacroDisplacement(double dx, double dy, 
 	return;
 }
 
-void independentTermsAssembly::addI2DPISMacroPressure(double dx, double dy, double dt, double alpha,
-	double G, vector<vector<double>> pField, int timeStep)
+void independentTermsAssembly::addI2DPISMacroPressureToMicro(double dx, double dy, double dt, 
+	double alpha, double G, vector<vector<double>> pField, int timeStep)
 {
 	int P_P, P_E, P_W, P_N, P_S;
 	double PP, PE, PW, PN, PS;
@@ -2664,6 +2672,332 @@ void independentTermsAssembly::addI2DPISMacroPressure(double dx, double dy, doub
 				PW=pField[P_W-Nu-Nv-NP][timeStep];
 				PN=pField[P_N-Nu-Nv-NP][timeStep];
 				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PS-PP);
+			}
+		}
+	}
+
+	return;
+}
+
+void independentTermsAssembly::addI2DPISMacroPressureToMacro(double dx, double dy, double dt, 
+	double alpha, double G, vector<vector<double>> pField, int timeStep)
+{
+	int P_P, P_E, P_W, P_N, P_S;
+	double PP, PE, PW, PN, PS;
+	int FVCounter;
+	int i, j;
+
+	for(FVCounter=0; FVCounter<NP; FVCounter++)
+	{
+		i=pressureFVCoordinates[FVCounter][0]-1;
+		j=pressureFVCoordinates[FVCounter][1]-1;
+
+		P_P=getMacroPressureFVPosition(i,j);
+
+		if(i==0) // Northern border
+		{
+			if(j==0) // Western border
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PS-PP);
+			}
+		}
+		else if(i==pressureFVIndex.size()-1) // Southern border
+		{
+			if(j==0) // Western border
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+			}
+			else
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PN-PP);
+			}
+		}
+		else
+		{
+			if(j==0) // Western border
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else
+			{
+				P_E=getMacroPressureFVPosition(i,j+1);
+				P_W=getMacroPressureFVPosition(i,j-1);
+				P_N=getMacroPressureFVPosition(i-1,j);
+				P_S=getMacroPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv-NP][timeStep];
+				PN=pField[P_N-Nu-Nv-NP][timeStep];
+				PS=pField[P_S-Nu-Nv-NP][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PS-PP);
+			}
+		}
+	}
+
+	return;
+}
+
+void independentTermsAssembly::addI2DPISMicroPressureToMacro(double dx, double dy, double dt, 
+	double alpha, double G, vector<vector<double>> pField, int timeStep)
+{
+	int P_P, P_E, P_W, P_N, P_S;
+	double PP, PE, PW, PN, PS;
+	int FVCounter;
+	int i, j;
+
+	for(FVCounter=0; FVCounter<NP; FVCounter++)
+	{
+		i=pressureFVCoordinates[FVCounter][0]-1;
+		j=pressureFVCoordinates[FVCounter][1]-1;
+
+		P_P=getMacroPressureFVPosition(i,j);
+
+		if(i==0) // Northern border
+		{
+			if(j==0) // Western border
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getPressureFVPosition(i,j-1);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_W=getPressureFVPosition(i,j-1);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PS-PP);
+			}
+		}
+		else if(i==pressureFVIndex.size()-1) // Southern border
+		{
+			if(j==0) // Western border
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_N=getPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getPressureFVPosition(i,j-1);
+				P_N=getPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+			}
+			else
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_W=getPressureFVPosition(i,j-1);
+				P_N=getPressureFVPosition(i-1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dx)/(16*G*dt)*dy*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PN-PP);
+			}
+		}
+		else
+		{
+			if(j==0) // Western border
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_N=getPressureFVPosition(i-1,j);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PE-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else if(j==pressureFVIndex[0].size()-1) // Eastern border
+			{
+				P_W=getPressureFVPosition(i,j-1);
+				P_N=getPressureFVPosition(i-1,j);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
+
+				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
+					*(PW-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PN-PP);
+				independentTermsArray[P_P]-=(alpha*alpha*dy)/(16*G*dt)*dx*(PS-PP);
+			}
+			else
+			{
+				P_E=getPressureFVPosition(i,j+1);
+				P_W=getPressureFVPosition(i,j-1);
+				P_N=getPressureFVPosition(i-1,j);
+				P_S=getPressureFVPosition(i+1,j);
+
+				PP=pField[P_P-Nu-Nv-NP][timeStep];
+				PE=pField[P_E-Nu-Nv][timeStep];
+				PW=pField[P_W-Nu-Nv][timeStep];
+				PN=pField[P_N-Nu-Nv][timeStep];
+				PS=pField[P_S-Nu-Nv][timeStep];
 
 				independentTermsArray[P_P]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt)
 					*(PE-PP);
