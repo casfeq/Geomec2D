@@ -44,8 +44,8 @@ int main(int argc, char** args)
 	inFile >> myProperties.fluidViscosity;
 	inFile >> myProperties.fluidDensity;
 	inFile.close();	
-	myProperties.macroPorosity=myProperties.porosity*9./10.;
-	myProperties.porosity=myProperties.porosity/10.;
+	myProperties.macroPorosity=myProperties.porosity*1./3.;
+	myProperties.porosity=myProperties.porosity*2./3.;
 	myProperties.macroPermeability=myProperties.permeability*999./1000.;
 	myProperties.permeability=myProperties.permeability/1000.;
 	
@@ -55,9 +55,9 @@ int main(int argc, char** args)
 	// Consolidation coefficient
 	double storativity,porosity,fluidViscosity,permeability,fluidCompressibility,
 		solidCompressibility,bulkCompressibility,longitudinalModulus,alpha;
-	porosity=myProperties.porosity;
+	porosity=myProperties.macroPorosity;
 	fluidViscosity=myProperties.fluidViscosity;
-	permeability=myProperties.permeability;
+	permeability=myProperties.macroPermeability;
 	fluidCompressibility=1/myProperties.fluidBulkModulus;
 	solidCompressibility=1/myProperties.solidBulkModulus;
 	bulkCompressibility=1/myProperties.bulkModulus;
@@ -75,15 +75,15 @@ int main(int argc, char** args)
 	double dt;
 	vector<double> timestepSize=
 	{
-		0.05,
-		0.01
+		0.25,
+		0.10
 	};
 
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
 	double g=0; // m/s^2
-	double columnLoad=-10e5; // Pa
+	double columnLoad=-10e3; // Pa
 	
 /*		PETSC INITIALIZE
 	----------------------------------------------------------------*/

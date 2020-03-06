@@ -29,28 +29,35 @@ parentDirectory=pathlib.Path(__file__).resolve().parents[1]
 fileName=str(parentDirectory)+"/export/solveTerzaghi_"+solvedPairs[0]+"RunInfo.txt"
 dt=np.loadtxt(fname=fileName)
 
+# Define plot style
+plotstyle=[]
+plotstyle.append(":o")
+plotstyle.append(":s")
+plotstyle.append(":^")
+plotstyle.append(":d")
+plotstyle.append(":*")
+plotstyle.append(":x")
+
 # Define marker colors
 colors=[]
-colors.append("#414042")
-colors.append("#fd411e")
-colors.append("#f075e6")
-colors.append("#0d75f8")
-colors.append("#02c14d")
+colors.append("#414042") # dark gray
+colors.append("#fd411e") # red
+# colors.append("#f075e6") # magenta
+colors.append("#0d75f8") # blue
+colors.append("#02c14d") # green
 
 # Define grids used
 gridType=[]
 gridType.append("staggered")
 gridType.append("collocated+CDS")
-gridType.append("collocated+1DPIS")
 gridType.append("collocated+I2DPIS")
-gridType.append("collocated+C2DPIS")
 
 # Define figure's name
 plotName="plot/doublePorosity.png"
 
 # Create and define figure's size and margins
 fig=plt.figure(figsize=(8,9))
-fig.subplots_adjust(top=0.90,bottom=0.05,left=0.08,right=0.96,wspace=0.2,hspace=0.25)
+fig.subplots_adjust(top=0.93,bottom=0.05,left=0.08,right=0.96,wspace=0.2,hspace=0.25)
 
 # Add subplot 1 for micro-pressure
 fig.add_subplot(2,2,2)
@@ -65,7 +72,7 @@ for j in range(0,len(gridType)):
 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
 		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5, \
+	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25, \
 		label=gridType[j])
 
 # Set axes' scale and limits
@@ -91,7 +98,7 @@ for j in range(0,len(gridType)):
 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
 		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -116,7 +123,7 @@ for j in range(0,len(gridType)):
 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
 		format(dt[0],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -141,7 +148,7 @@ for j in range(0,len(gridType)):
 	fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
 		format(dt[1],".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yNumeric=np.loadtxt(fname=fileName)
-	numeric,=plt.plot(pNumeric,yNumeric,':.',color=colors[j],ms=10,mec='k',mew=0.5)
+	numeric,=plt.plot(pNumeric,yNumeric,plotstyle[j],color=colors[j],ms=6,mec='k',mew=0.25)
 
 # Set axes' scale and limits
 axes=plt.gca()

@@ -913,23 +913,23 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	double rho_f=myProperties.fluidDensity;
 	double mu_f=myProperties.fluidViscosity;
 
-	// BC types ({u,v,P} 1 for Dirichlet and 0 for Neumann, -1 for Stress/Fluid Flow, starts on
+	// BC types ({u,v,p-micro,p-macro} 1 for Dirichlet and 0 for Neumann, -1 for Stress/Fluid Flow, starts on
 	// "north" and follows counterclockwise)
 	vector<vector<int>> bcType=
 	{
-		{-1,-1,1},
-		{1,-1,-1},
-		{-1,1,0},
-		{1,-1,-1}
+		{-1,-1,-1,1},
+		{1,-1,-1,-1},
+		{-1,1,-1,-1},
+		{1,-1,-1,-1}
 	};
 
 	// BC values ({u,v,P}, starts on "north" and follows counterclockwise)
 	vector<vector<double>> bcValue=
 	{
-		{0,sigmab,0},
-		{0,0,0},
-		{0,0,rho_f*g},
-		{0,0,0}
+		{0,sigmab,0,0},
+		{0,0,0,0},
+		{0,0,0,0},
+		{0,0,0,0}
 	};
 
 /*		GRID CREATION
@@ -1086,8 +1086,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
-		myDataProcessing.exportTerzaghiNumericalSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
-		myDataProcessing.exportMacroPressureSolution(dt,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportMacroPressureSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
 	}
 
 	return ierr;

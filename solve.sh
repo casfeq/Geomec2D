@@ -22,9 +22,7 @@ cd build
 echo "-- Solving benchmarking problems"
 ./$sourceName "staggered" "NA" "hardSediment"
 ./$sourceName "collocated" "CDS" "hardSediment"
-./$sourceName "collocated" "1DPIS" "hardSediment"
 ./$sourceName "collocated" "I2DPIS" "hardSediment"
-./$sourceName "collocated" "C2DPIS" "hardSediment"
 
 cd ..
 echo "-- Plotting results"

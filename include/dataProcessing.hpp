@@ -74,7 +74,7 @@ public:
 	void exportMandelAnalyticalSolution(double,double,double,double,double,double,double,double,
 		double,double,double,double,int,string);
 	void storeMacroPressure3DField(vector<vector<int>>,vector<vector<double>>);
-	void exportMacroPressureSolution(double,int,string);
+	void exportMacroPressureSolution(double,double,double,int,string);
 
 
 	// Constructor
@@ -1057,30 +1057,62 @@ void dataProcessing::storeMacroPressure3DField(vector<vector<int>> idP,
 	return;
 }
 
-void dataProcessing::exportMacroPressureSolution(double dt, int timeStep, string pairName)
+void dataProcessing::exportMacroPressureSolution(double dy, double dt, double Ly, int timeStep,
+	string pairName)
 {
 	string fieldName;
-	vector<double> pField;pField.resize(macroPressure3DField.size());
+	vector<double> yCoordP;yCoordP.resize(pressure3DField.size());
+	vector<double> pField;pField.resize(pressure3DField.size());
+	vector<double> pMField;pMField.resize(macroPressure3DField.size());
 
-	// Exports pMField
-	if(macroPressure3DField[0].size()%2==0)
+	// Exports yCoordP
+	if(gridType=="staggered") yCoordP[0]=Ly-dy/2;
+	else yCoordP[0]=Ly;
+	for(int i=1; i<yCoordP.size(); i++) yCoordP[i]=yCoordP[i-1]-dy;
+	fieldName="terzaghi_"+pairName+"_YPNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	// if(gridType=="staggered") yCoordP.insert(yCoordP.begin(),Ly);
+	export1DFieldToTxt(yCoordP,fieldName);
+
+	// Exports pField
+	if(pressure3DField[0].size()%2==0)
 		for(int i=0; i<pField.size(); i++)
 		{
-			int midCols=macroPressure3DField[0].size()/2;
+			int midCols=pressure3DField[0].size()/2;
 			pField[i]=0;
-			pField[i]+=macroPressure3DField[i][midCols][timeStep]/2;
-			pField[i]+=macroPressure3DField[i][midCols-1][timeStep]/2;
+			pField[i]+=pressure3DField[i][midCols][timeStep]/2;
+			pField[i]+=pressure3DField[i][midCols-1][timeStep]/2;
 		}
 	else
 		for(int i=0; i<pField.size(); i++)
 		{
-			int midCols=macroPressure3DField[0].size()/2;
+			int midCols=pressure3DField[0].size()/2;
 			pField[i]=0;
-			pField[i]+=macroPressure3DField[i][midCols][timeStep];
+			pField[i]+=pressure3DField[i][midCols][timeStep];
 		}
-	fieldName="terzaghi_"+pairName+"_MacroPNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
-	if(gridType=="staggered") pField.insert(pField.begin(),0);
+	fieldName="terzaghi_"+pairName+"_PNumeric_dt="+to_string(dt)+"_timeStep="+to_string(timeStep);
+	// if(gridType=="staggered") pField.insert(pField.begin(),0);
 	export1DFieldToTxt(pField,fieldName);
+
+	// Exports pMField
+	if(macroPressure3DField[0].size()%2==0)
+		for(int i=0; i<pMField.size(); i++)
+		{
+			int midCols=macroPressure3DField[0].size()/2;
+			pMField[i]=0;
+			pMField[i]+=macroPressure3DField[i][midCols][timeStep]/2;
+			pMField[i]+=macroPressure3DField[i][midCols-1][timeStep]/2;
+		}
+	else
+		for(int i=0; i<pMField.size(); i++)
+		{
+			int midCols=macroPressure3DField[0].size()/2;
+			pMField[i]=0;
+			pMField[i]+=macroPressure3DField[i][midCols][timeStep];
+		}
+	fieldName="terzaghi_"+pairName+"_MacroPNumeric_dt="+to_string(dt)+"_timeStep="+
+		to_string(timeStep);
+	// if(gridType=="staggered") pMField.insert(pMField.begin(),0);
+	export1DFieldToTxt(pMField,fieldName);
 
 	return;
 }
