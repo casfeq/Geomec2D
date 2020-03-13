@@ -69,10 +69,10 @@ int main(int argc, char** args)
 	vector<int> mesh=
 	{
 		3,
-		6
+		9
 	};
 	double h=1./mesh[0];
-	double timestepSize=0.25;
+	double timestepSize=0.05;
 	double consolidationTime=h*h/consolidationCoefficient;
 	double Lt=(Nt-1)*(consolidationTime*timestepSize);
 	double dt=Lt/(Nt-1);

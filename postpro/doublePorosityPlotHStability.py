@@ -11,6 +11,7 @@
 import numpy as np
 import pathlib
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import sys
 
 """    PLOT RESULTS
@@ -31,8 +32,8 @@ h=np.loadtxt(fname=fileName)
 
 # Define plot style
 plotstyle=[]
-plotstyle.append(":o")
 plotstyle.append(":s")
+plotstyle.append(":o")
 plotstyle.append(":^")
 plotstyle.append(":d")
 plotstyle.append(":*")
@@ -198,7 +199,7 @@ for j in range(0,len(gridType)):
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yPosition=np.loadtxt(fname=fileName)
 	XPosition,YPosition=np.meshgrid(xPosition,yPosition)
-	plt.contourf(XPosition,YPosition,pNumeric,250)
+	plt.contourf(XPosition,YPosition,pNumeric,1000,cmap=cm.inferno)
 
 	# Set axes' labels
 	plt.xlabel('Length (m)')
@@ -220,7 +221,7 @@ for j in range(0,len(gridType)):
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yPosition=np.loadtxt(fname=fileName)
 	XPosition,YPosition=np.meshgrid(xPosition,yPosition)
-	plt.contourf(XPosition,YPosition,pNumeric,250)
+	plt.contourf(XPosition,YPosition,pNumeric,1000,cmap=cm.inferno)
 
 	# Set axes' labels
 	plt.xlabel('Length (m)')
@@ -242,7 +243,7 @@ for j in range(0,len(gridType)):
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yPosition=np.loadtxt(fname=fileName)
 	XPosition,YPosition=np.meshgrid(xPosition,yPosition)
-	plt.contourf(XPosition,YPosition,pNumeric,250)
+	plt.contourf(XPosition,YPosition,pNumeric,1000,cmap=cm.inferno)
 
 	# Set axes' labels
 	plt.xlabel('Length (m)')
@@ -264,7 +265,7 @@ for j in range(0,len(gridType)):
 		".6f")+"_timeStep=1_"+gridType[j]+"-grid.txt"
 	yPosition=np.loadtxt(fname=fileName)
 	XPosition,YPosition=np.meshgrid(xPosition,yPosition)
-	plt.contourf(XPosition,YPosition,pNumeric,250)
+	plt.contourf(XPosition,YPosition,pNumeric,1000,cmap=cm.inferno)
 
 	# Set axes' labels
 	plt.xlabel('Length (m)')

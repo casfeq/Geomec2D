@@ -919,7 +919,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	{
 		{-1,-1,-1,1},
 		{1,-1,-1,-1},
-		{-1,1,-1,1},
+		{-1,1,-1,-1},
 		{1,-1,-1,-1}
 	};
 
