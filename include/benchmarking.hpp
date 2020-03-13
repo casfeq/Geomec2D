@@ -1104,6 +1104,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 	// Grid parameters
 	int Nx=2*meshSize;
 	int Ny=2*meshSize;
+	int stripSize=meshSize;
 
 	// Reservoir parameters
 	double Lx=2; // [m]
@@ -1217,6 +1218,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 
 	// Coefficients matrix assembly
 	myCoefficients.assemblyMacroPorosityMatrix(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,phi,phiM,KM,QM);
+	myCoefficients.addStripfootBC(stripSize);
 
 	// Passing variables
 	vector<vector<double>> coefficientsMatrix;swap(coefficientsMatrix,
@@ -1227,8 +1229,6 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 		myCoefficients.sparseCoefficientsColumn);
 	vector<double> sparseCoefficientsValue;swap(sparseCoefficientsValue,
 		myCoefficients.sparseCoefficientsValue);
-
-	printsparse(coefficientsMatrix);newline();
 
 /*		LINEAR SYSTEM SOLVER
 	----------------------------------------------------------------*
