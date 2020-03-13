@@ -80,8 +80,8 @@ int main(int argc, char** args)
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
-	double g=0; // m/s^2
 	double columnLoad=-10e3; // Pa
+	double stripLoad=-10e3; // Pa
 	
 /*		PETSC INITIALIZE
 	----------------------------------------------------------------*/
@@ -102,7 +102,17 @@ int main(int argc, char** args)
 		Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
 		dt=Lt/(Nt-1);
 		exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
-		ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,g,columnLoad,myProperties);
+		ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+			CHKERRQ(ierr);
+	}
+	cout << "Solved Stripfoot (double-porosity) for: \n";
+	createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
+	for(int i=0; i<timestepSize.size(); i++)
+	{
+		Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
+		dt=Lt/(Nt-1);
+		exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
+		ierr=stripfootDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
 			CHKERRQ(ierr);
 	}
 	

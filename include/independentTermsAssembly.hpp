@@ -3025,7 +3025,7 @@ void independentTermsAssembly::addStripfootBC(int strip, double dx, double strip
 		v_P=getVDisplacementFVPosition(0,0);
 		independentTermsArray[v_P]+=stripLoad*dx*0.5;
 		
-		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
 		{
 			P_P=getMacroPressureFVPosition(0,j);
 

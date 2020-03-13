@@ -1218,7 +1218,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 
 	// Coefficients matrix assembly
 	myCoefficients.assemblyMacroPorosityMatrix(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,phi,phiM,KM,QM);
-	myCoefficients.addStripfootBC(stripSize);
+	myCoefficients.addStripfootBC(stripSize,K,mu_f);
 
 	// Passing variables
 	vector<vector<double>> coefficientsMatrix;swap(coefficientsMatrix,
@@ -1311,7 +1311,8 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
-		myDataProcessing.exportStripfootSolution(dx,dy,dt,Ly,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportStripfootTSolution(dx,dy,dt,Ly,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportStripfootHSolution(dx,dy,h,Ly,exportedTimeSteps[i],pairName);
 	}
 
 	return ierr;

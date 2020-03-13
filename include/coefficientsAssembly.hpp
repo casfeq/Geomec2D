@@ -112,7 +112,7 @@ public:
 	void addMacroPressuretoContinuity(double,double,double);
 	void addMacroBCToContinuity();
 	void addMacroDirichletBCToContinuity(int);
-	void addStripfootBC(int);
+	void addStripfootBC(int,double,double);
 
 	// Constructor
 	coefficientsAssembly(vector<vector<int>>,int,int,int,vector<vector<int>>,vector<vector<int>>,
@@ -3988,23 +3988,32 @@ void coefficientsAssembly::addMacroDirichletBCToContinuity(int counter)
 	return;
 }
 
-void coefficientsAssembly::addStripfootBC(int strip)
+void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
 {
 	int P_P;
 	int j;
 
 	if(gridType=="collocated")
 	{
-		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
 		{
 			P_P=getMacroPressureFVPosition(0,j);
 
 			coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
 			coefficientsMatrix[P_P][P_P]+=1;
 		}
-
-		assemblySparseMatrix(coefficientsMatrix);
 	}
+	else
+	{
+		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		{
+			P_P=getPressureFVPosition(0,j);
+
+			coefficientsMatrix[P_P][P_P]+=2*K/mu_f;
+		}
+	}
+
+	assemblySparseMatrix(coefficientsMatrix);
 
 	return;
 }

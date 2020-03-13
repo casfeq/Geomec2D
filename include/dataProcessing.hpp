@@ -76,7 +76,8 @@ public:
 	void storeMacroPressure3DField(vector<vector<int>>,vector<vector<double>>);
 	void exportMacroPressureHSolution(double,double,double,int,string);
 	void exportMacroPressureTSolution(double,double,double,int,string);
-	void exportStripfootSolution(double,double,double,double,int,string);
+	void exportStripfootTSolution(double,double,double,double,int,string);
+	void exportStripfootHSolution(double,double,double,double,int,string);
 
 	// Constructor
 	dataProcessing(vector<vector<int>>,vector<vector<int>>,vector<vector<int>>,
@@ -1178,7 +1179,7 @@ void dataProcessing::exportMacroPressureTSolution(double dy, double dt, double L
 	return;
 }
 
-void dataProcessing::exportStripfootSolution(double dx, double dy, double dt, double Ly,
+void dataProcessing::exportStripfootTSolution(double dx, double dy, double dt, double Ly,
 	int timeStep, string pairName)
 {
 	string fileName;
@@ -1187,12 +1188,13 @@ void dataProcessing::exportStripfootSolution(double dx, double dy, double dt, do
 	int rowNo=pressure3DField.size();
 	int colNo=pressure3DField[0].size();
 
-	fileName="../export/stripfoot_"+pairName+"xCoord_"+gridType+"-grid.txt";
+	fileName="../export/stripfoot_"+pairName+"_xCoord_dt="+to_string(dt)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
 	ofstream xCoordFile(fileName);
 	if(xCoordFile.is_open())
 	{
-		for(int i=0; i<rowNo; i++)
-		{
+		// for(int i=0; i<rowNo; i++)
+		// {
 			if(gridType=="staggered") position=dx/2;
 			else position=0;
 
@@ -1203,13 +1205,14 @@ void dataProcessing::exportStripfootSolution(double dx, double dy, double dt, do
 				position+=dx;
 			}
 
-			xCoordFile << "\n";
-		}
+			// xCoordFile << "\n";
+		// }
 
 		xCoordFile.close();
 	}
 
-	fileName="../export/stripfoot_"+pairName+"yCoord_"+gridType+"-grid.txt";
+	fileName="../export/stripfoot_"+pairName+"_yCoord_dt="+to_string(dt)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
 	ofstream yCoordFile(fileName);
 	if(yCoordFile.is_open())
 	{
@@ -1218,11 +1221,11 @@ void dataProcessing::exportStripfootSolution(double dx, double dy, double dt, do
 
 		for(int i=0; i<rowNo; i++)
 		{
-			for(int j=0; j<colNo; j++)
-			{
+			// for(int j=0; j<colNo; j++)
+			// {
 				yCoordFile << position;
-				yCoordFile << "\t";
-			}
+				// yCoordFile << "\t";
+			// }
 
 			yCoordFile << "\n";
 			position-=dy;
@@ -1235,6 +1238,90 @@ void dataProcessing::exportStripfootSolution(double dx, double dy, double dt, do
 		to_string(timeStep)+"_"+gridType+"-grid.txt";
 	ofstream pFile(fileName);
 	fileName="../export/stripfoot_"+pairName+"_MacroPNumeric_dt="+to_string(dt)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
+	ofstream pMFile(fileName);
+	if(pFile.is_open() && pMFile.is_open())
+	{
+		for(int i=0; i<rowNo; i++)
+		{
+			for(int j=0; j<colNo; j++)
+			{
+				pFile << pressure3DField[i][j][timeStep];
+				pFile << "\t";
+				pMFile << macroPressure3DField[i][j][timeStep];
+				pMFile << "\t";
+			}
+
+			pFile << "\n";
+			pMFile << "\n";
+		}
+
+		pFile.close();
+		pMFile.close();
+	}
+
+	return;
+}
+
+void dataProcessing::exportStripfootHSolution(double dx, double dy, double h, double Ly,
+	int timeStep, string pairName)
+{
+	string fileName;
+	vector<vector<double>> xCoord, yCoord;
+	double position;
+	int rowNo=pressure3DField.size();
+	int colNo=pressure3DField[0].size();
+
+	fileName="../export/stripfoot_"+pairName+"_xCoord_h="+to_string(h)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
+	ofstream xCoordFile(fileName);
+	if(xCoordFile.is_open())
+	{
+		// for(int i=0; i<rowNo; i++)
+		// {
+			if(gridType=="staggered") position=dx/2;
+			else position=0;
+
+			for(int j=0; j<colNo; j++)
+			{
+				xCoordFile << position;
+				xCoordFile << "\t";
+				position+=dx;
+			}
+
+			// xCoordFile << "\n";
+		// }
+
+		xCoordFile.close();
+	}
+
+	fileName="../export/stripfoot_"+pairName+"_yCoord_h="+to_string(h)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
+	ofstream yCoordFile(fileName);
+	if(yCoordFile.is_open())
+	{
+		if(gridType=="staggered") position=Ly-dy/2;
+		else position=Ly;
+
+		for(int i=0; i<rowNo; i++)
+		{
+			// for(int j=0; j<colNo; j++)
+			// {
+				yCoordFile << position;
+				// yCoordFile << "\t";
+			// }
+
+			yCoordFile << "\t";
+			position-=dy;
+		}
+
+		yCoordFile.close();
+	}
+
+	fileName="../export/stripfoot_"+pairName+"_PNumeric_h="+to_string(h)+"_timeStep="+
+		to_string(timeStep)+"_"+gridType+"-grid.txt";
+	ofstream pFile(fileName);
+	fileName="../export/stripfoot_"+pairName+"_MacroPNumeric_h="+to_string(h)+"_timeStep="+
 		to_string(timeStep)+"_"+gridType+"-grid.txt";
 	ofstream pMFile(fileName);
 	if(pFile.is_open() && pMFile.is_open())
