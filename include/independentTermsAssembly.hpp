@@ -92,6 +92,7 @@ public:
 		int);
 	void addI2DPISMicroPressureToMacro(double,double,double,double,double,vector<vector<double>>,
 		int);
+	void addStripfootBC(int,double,double);
 
 	// Constructor
 	independentTermsAssembly(vector<vector<int>>,vector<vector<double>>,int,int,int,
@@ -3009,6 +3010,39 @@ void independentTermsAssembly::addI2DPISMicroPressureToMacro(double dx, double d
 					*(PS-PP);
 			}
 		}
+	}
+
+	return;
+}
+
+void independentTermsAssembly::addStripfootBC(int strip, double dx, double stripLoad)
+{
+	int v_P, P_P;
+	int j;
+
+	if(gridType=="collocated")
+	{
+		for(j=0; j<strip+1; j++)
+		{
+			v_P=getVDisplacementFVPosition(0,0);
+			P_P=getMacroPressureFVPosition(0,j);
+
+			independentTermsArray[v_P]+=stripLoad*dx*0.5;
+			independentTermsArray[P_P]=0;
+		}
+	}
+	else
+	{
+		v_P=getVDisplacementFVPosition(0,0);
+
+		independentTermsArray[v_P]+=stripLoad*dx;		
+	}
+
+	for(j=1; j<strip+1; j++)
+	{
+		v_P=getVDisplacementFVPosition(0,j);
+
+		independentTermsArray[v_P]+=stripLoad*dx;
 	}
 
 	return;

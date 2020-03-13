@@ -13,8 +13,8 @@ rm -rf export/*
 cd build
 echo "-- Solving benchmarking problems"
 ./$sourceName "staggered" "NA" "doublePorosity"
-# ./$sourceName "collocated" "CDS" "doublePorosity"
-# ./$sourceName "collocated" "I2DPIS" "doublePorosity"
+./$sourceName "collocated" "CDS" "doublePorosity"
+./$sourceName "collocated" "I2DPIS" "doublePorosity"
 
 # # PLOT
 # cd ..

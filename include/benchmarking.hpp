@@ -1231,7 +1231,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 		myCoefficients.sparseCoefficientsValue);
 
 /*		LINEAR SYSTEM SOLVER
-	----------------------------------------------------------------*
+	----------------------------------------------------------------*/
 
 	// Variables declaration
 	int timeStep;
@@ -1262,6 +1262,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 		// Assembly of the independent terms array
 		myIndependentTerms.assemblyMacroIndependentTermsArray(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,rho,
 			g,uField,vField,pField,pMField,timeStep,phi,phiM,KM,QM);
+		myIndependentTerms.addStripfootBC(stripSize,dx,sigmab);
 
 		// Passing independent terms array
 		independentTermsArray=myIndependentTerms.independentTermsArray;
@@ -1287,7 +1288,7 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 	cout << "(h=" << h << ", dt=" << dt << ")\n";
 
 /*		DATA PROCESSING
-	----------------------------------------------------------------*
+	----------------------------------------------------------------*/
 	
 	// Variables declaration
 	vector<int> exportedTimeSteps=
@@ -1313,6 +1314,6 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 		myDataProcessing.exportMacroPressureHSolution(dy,h,Ly,exportedTimeSteps[i],pairName);
 		myDataProcessing.exportMacroPressureTSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
 	}
-	/**/
+	
 	return ierr;
 };

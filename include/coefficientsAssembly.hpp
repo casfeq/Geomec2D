@@ -3991,17 +3991,20 @@ void coefficientsAssembly::addMacroDirichletBCToContinuity(int counter)
 void coefficientsAssembly::addStripfootBC(int strip)
 {
 	int P_P;
-	int i, j;
+	int j;
 
-	for(j=0; j<strip+1; j++)
+	if(gridType=="collocated")
 	{
-		P_P=getMacroPressureFVPosition(0,j);
+		for(j=0; j<strip+1; j++)
+		{
+			P_P=getMacroPressureFVPosition(0,j);
 
-		coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
-		coefficientsMatrix[P_P][P_P]+=1;
+			coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
+			coefficientsMatrix[P_P][P_P]+=1;
+		}
+
+		assemblySparseMatrix(coefficientsMatrix);
 	}
-
-	assemblySparseMatrix(coefficientsMatrix);
 
 	return;
 }
