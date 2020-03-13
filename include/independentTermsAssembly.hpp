@@ -3022,12 +3022,13 @@ void independentTermsAssembly::addStripfootBC(int strip, double dx, double strip
 
 	if(gridType=="collocated")
 	{
-		for(j=0; j<strip+1; j++)
+		v_P=getVDisplacementFVPosition(0,0);
+		independentTermsArray[v_P]+=stripLoad*dx*0.5;
+		
+		for(j=strip; j<pressureFVIndex[0].size(); j++)
 		{
-			v_P=getVDisplacementFVPosition(0,0);
 			P_P=getMacroPressureFVPosition(0,j);
 
-			independentTermsArray[v_P]+=stripLoad*dx*0.5;
 			independentTermsArray[P_P]=0;
 		}
 	}

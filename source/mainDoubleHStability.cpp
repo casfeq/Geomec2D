@@ -68,7 +68,7 @@ int main(int argc, char** args)
 	int Nt=2;
 	vector<int> mesh=
 	{
-		1//,
+		3//,
 		// 6
 	};
 	double h=1./mesh[0];

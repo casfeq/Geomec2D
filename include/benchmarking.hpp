@@ -1102,13 +1102,13 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 	----------------------------------------------------------------*/
 
 	// Grid parameters
-	int Nx=2*meshSize;
-	int Ny=2*meshSize;
+	int Nx=5*meshSize;
+	int Ny=5*meshSize;
 	int stripSize=meshSize;
 
 	// Reservoir parameters
-	double Lx=2; // [m]
-	double Ly=2; // [m]
+	double Lx=5; // [m]
+	double Ly=5; // [m]
 
 	vector<vector<double>> sCoordinates=
 	{
@@ -1311,9 +1311,8 @@ int stripfootDouble(string gridType, string interpScheme, int Nt, int meshSize, 
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
-		myDataProcessing.exportMacroPressureHSolution(dy,h,Ly,exportedTimeSteps[i],pairName);
-		myDataProcessing.exportMacroPressureTSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
+		myDataProcessing.exportStripfootSolution(dx,dy,dt,Ly,exportedTimeSteps[i],pairName);
 	}
-	
+
 	return ierr;
 };

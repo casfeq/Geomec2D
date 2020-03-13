@@ -3995,7 +3995,7 @@ void coefficientsAssembly::addStripfootBC(int strip)
 
 	if(gridType=="collocated")
 	{
-		for(j=0; j<strip+1; j++)
+		for(j=strip; j<pressureFVIndex[0].size(); j++)
 		{
 			P_P=getMacroPressureFVPosition(0,j);
 
