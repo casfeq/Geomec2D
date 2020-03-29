@@ -65,8 +65,10 @@ inputOptions=(*.txt)
 inputOptions=("${inputOptions[@]%.*}")
 cd ..
 
-medium=$(zenity --list --text "Choose the medium to be simulated" --radiolist --column "Pick" \
-	--column "Medium" FALSE "${inputOptions[@]}" --width=300 --height=400);
+# medium=$(zenity --list --text "Choose the medium to be simulated" --radiolist --column "Pick" \
+# 	--column "Medium" FALSE "${inputOptions[@]}" --width=300 --height=400);
+
+medium="gulfMexicoShale";
 
 # RUN
 for ((i=0; i<numRuns; i++));

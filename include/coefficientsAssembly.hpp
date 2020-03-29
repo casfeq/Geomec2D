@@ -2595,7 +2595,7 @@ void coefficientsAssembly::increaseMandelCoefficientsMatrixSize()
 void coefficientsAssembly::addMandelStaggeredStressToVDisplacement(double dx)
 {
 	int v_P=getVDisplacementFVPosition(0,vDisplacementFVIndex[0].size()-1);
-	int sigma_P=coefficientsMatrix[0].size()-1;
+	int sigma_P=coefficientsMatrix.size()-1;
 
 	coefficientsMatrix[v_P][sigma_P]-=dx;
 
@@ -2607,7 +2607,7 @@ void coefficientsAssembly::addMandelStaggeredStress(double dx, double dy, double
 {
 	int i, j;
 	int u_P, u_E, v_P, v_S, P_P;
-	int sigma_P=coefficientsMatrix[0].size()-1;
+	int sigma_P=coefficientsMatrix.size()-1;
 
 	for(int FVCounter=0; FVCounter<Nv; FVCounter++)
 	{
@@ -2638,7 +2638,7 @@ void coefficientsAssembly::addMandelStaggeredStress(double dx, double dy, double
 void coefficientsAssembly::addMandelCollocatedStressToVDisplacement(double dx)
 {
 	int v_P=getVDisplacementFVPosition(0,vDisplacementFVIndex[0].size()-1);
-	int sigma_P=coefficientsMatrix[0].size()-1;
+	int sigma_P=coefficientsMatrix.size()-1;
 
 	coefficientsMatrix[v_P][sigma_P]-=dx*0.5;
 
@@ -2650,7 +2650,7 @@ void coefficientsAssembly::addMandelCollocatedStress(double dx, double dy, doubl
 {
 	int i, j;
 	int u_P, u_E, u_W, v_P, v_S, P_P;
-	int sigma_P=coefficientsMatrix[0].size()-1;
+	int sigma_P=coefficientsMatrix.size()-1;
 
 	for(int FVCounter=0; FVCounter<Nv; FVCounter++)
 	{
