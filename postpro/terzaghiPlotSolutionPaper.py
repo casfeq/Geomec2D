@@ -1,0 +1,135 @@
+import numpy as np
+import pathlib
+import matplotlib.pyplot as plt
+import sys
+
+"""    PLOT RESULTS
+  ----------------------------------------------------------------"""
+
+# Get pairs solved
+solvedPairs=[]
+for eachArg in sys.argv:
+	solvedPairs.append(eachArg)
+solvedPairs.pop(0)
+
+# Get parent directory
+parentDirectory=pathlib.Path(__file__).resolve().parents[1]
+
+# Get grid type for this run
+gridType=[]
+gridType.append("staggered")
+gridType.append("collocated+CDS")
+gridType.append("collocated+I2DPIS")
+
+# Get dt
+fileName=str(parentDirectory)+"/export/solveTerzaghi_"+solvedPairs[0]+"RunInfo.txt"
+dt=np.loadtxt(fname=fileName)
+dt=dt[0]
+
+# Get timesteps exported
+timesteps=[]
+timesteps.append("1")
+timesteps.append("62")
+timesteps.append("250")
+timesteps.append("500")
+
+# Define markers
+markers=[]
+markers.append("o")
+markers.append("s")
+markers.append("x")
+
+# Define labels
+labels=[]
+labels.append("Staggered")
+labels.append("Collocated (Non-stabilized)")
+labels.append("Collocated (Stabilized)")
+
+# SUBPLOT
+
+# Create and define figure's size and margins
+fig=plt.figure(figsize=(8,5))
+fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
+
+# Define figure's name
+plotName="plot/terzaghiSolution_paper.pdf"
+
+# Add subplot for pressure
+fig.add_subplot(1,2,1)
+
+# Plot pressure
+for j in range(0,len(gridType)):
+	for i in range(0,len(timesteps)):
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PExact_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		pExact=np.loadtxt(fname=fileName)
+		pExact[:]=[x/1000 for x in pExact]
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YExact_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		yExact=np.loadtxt(fname=fileName)
+		if i==0 and j==0:
+			exact,=plt.plot(pExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25, \
+				label="Analytical")
+		else:
+			exact,=plt.plot(pExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25)
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		pNumeric=np.loadtxt(fname=fileName)
+		pNumeric[:]=[x/1000 for x in pNumeric]
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		yNumeric=np.loadtxt(fname=fileName)
+		if i==0:
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.5, \
+				label=labels[j])
+		else:
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.5)
+
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_ylim([0,None])
+
+# Set axes' labels
+plt.xlabel('Pressure (kPa)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
+
+# Add subplot for pressure
+fig.add_subplot(1,2,2)
+
+# Plot displacement
+for j in range(0,len(gridType)):
+	for i in range(0,len(timesteps)):
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VExact_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		vExact=np.loadtxt(fname=fileName)
+		vExact[:]=[x*1000 for x in vExact]
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YExact_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		yExact=np.loadtxt(fname=fileName)
+		exact=plt.plot(vExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25)
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VNumeric_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		vNumeric=np.loadtxt(fname=fileName)
+		vNumeric[:]=[x*1000 for x in vNumeric]
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YVNumeric_dt="+ \
+			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
+		yNumeric=np.loadtxt(fname=fileName)
+		numeric,=plt.plot(vNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.5)
+
+# Set axes' scale and limits
+axes=plt.gca()
+axes.set_ylim([0,None])
+
+# Set axes' labels
+plt.xlabel('Vertical Displacement (mm)')
+plt.ylabel('Height (m)')
+plt.grid(which='major',axis='both')
+
+# Add figure's legend
+fig.legend(loc='upper center',ncol=2)
+
+# Save figure
+plt.savefig(plotName)
+
+print("Plotted Terzaghi")

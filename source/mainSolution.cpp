@@ -83,7 +83,7 @@ int main(int argc, char** args)
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
-	double g=-9.8; // m/s^2
+	double g=0; // m/s^2
 	double columnLoad=-10e3; // Pa
 	double mandelLoad=-10e4; // N/m
 	double stripLoad=-10e3; // Pa
