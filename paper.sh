@@ -82,3 +82,4 @@ echo "-- Plotting results"
 python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
 python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
 echo ""
+rm -rf export/*

@@ -35,9 +35,9 @@ timesteps.append("500")
 
 # Define markers
 markers=[]
-markers.append("-o")
-markers.append("-s")
-markers.append("-x")
+markers.append("ko")
+markers.append("ks")
+markers.append("kx")
 
 # Define labels
 labels=[]
