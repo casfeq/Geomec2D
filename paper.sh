@@ -26,14 +26,13 @@ declare -a medium
 
 gridType+=("staggered")
 interpScheme+=("NA")
-# gridType+=("collocated")
-# interpScheme+=("CDS")
-# gridType+=("collocated")
-# interpScheme+=("I2DPIS")
+gridType+=("collocated")
+interpScheme+=("CDS")
+gridType+=("collocated")
+interpScheme+=("I2DPIS")
 numRuns=${#gridType[@]}
-# problemsSolved+=2
-# problemsSolved+=4
-problemsSolved+=8
+problemsSolved+=2
+problemsSolved+=4
 medium="gulfMexicoShale";
 
 # SOLVE
@@ -47,40 +46,42 @@ do
 	cd ..
 done
 
-# # PLOT
-# echo "-- Plotting results"
-# python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
-# python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
-# echo ""
+# PLOT
+echo "-- Plotting results"
+python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
+python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
+echo ""
 
-# # STABILITY
-# rm -rf export/*
-# export sourceName="mainStability"
+# STABILITY
+rm -rf export/*
+export sourceName="mainStability"
 
-# # COMPILE
-# cd build
-# cmake ..
-# make
-# cd ..
-# echo ""
+# COMPILE
+cd build
+cmake ..
+make
+cd ..
+echo ""
 
-# # PARAMETERS
-# medium="softSediment";
+# PARAMETERS
+problemsSolved+=8
+medium="softSediment";
 
-# # RUN
-# echo "-- Testing method's stability"
-# echo ""
-# for ((i=0; i<numRuns; i++));
-# do
-# 	cd build
-# 	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
-# 	echo ""
-# 	cd ..
-# done
+# RUN
+echo "-- Testing method's stability"
+echo ""
+for ((i=0; i<numRuns; i++));
+do
+	cd build
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
+	echo ""
+	cd ..
+done
 
-# # PLOT
-# echo "-- Plotting results"
-# python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
-# python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
-# echo ""
-# rm -rf export/*
+# PLOT
+echo "-- Plotting results"
+python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
+python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
+python3 -W ignore ./postpro/stripfootPlotStabilityPaper.py ${medium}
+echo ""
+rm -rf export/*

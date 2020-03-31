@@ -139,12 +139,12 @@ int main(int argc, char** args)
 		else if(problemsSolved[i]==8)
 		{
 			cout << "Solved stripfoot for: \n";
-			createSolveRunInfo(myGridType,myInterpScheme,"stripfoot");
+			createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
 			for(int i=0; i<timestepSize.size(); i++)
 			{
 				Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
 				dt=Lt/(Nt-1);
-				exportSolveRunInfo(dt,"stripfoot_"+myMedium);
+				exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
 				ierr=stripfoot(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
 					CHKERRQ(ierr);
 			}
