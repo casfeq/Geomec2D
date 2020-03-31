@@ -133,7 +133,7 @@ int main(int argc, char** args)
 			createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
 			exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
 			ierr=stripfoot(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
-				// CHKERRQ(ierr);
+				CHKERRQ(ierr);
 		}
 	}
 	
