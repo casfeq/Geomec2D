@@ -94,6 +94,7 @@ int main(int argc, char** args)
 	double g=0; // m/s^2
 	double columnLoad=-10e3; // Pa
 	double mandelLoad=-10e3; // N/m
+	double stripLoad=-10e3; // Pa
 	
 /*		PETSC INITIALIZE
 	----------------------------------------------------------------*/
@@ -132,6 +133,19 @@ int main(int argc, char** args)
 				dt=Lt/(Nt-1);
 				exportSolveRunInfo(dt,"Mandel_"+myMedium);
 				ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
+					CHKERRQ(ierr);
+			}
+		}
+		else if(problemsSolved[i]==8)
+		{
+			cout << "Solved stripfoot for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"stripfoot");
+			for(int i=0; i<timestepSize.size(); i++)
+			{
+				Lt=(Nt-1)*(consolidationTime*timestepSize[i]);
+				dt=Lt/(Nt-1);
+				exportSolveRunInfo(dt,"stripfoot_"+myMedium);
+				ierr=stripfoot(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
 					CHKERRQ(ierr);
 			}
 		}

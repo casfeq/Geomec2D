@@ -127,6 +127,14 @@ int main(int argc, char** args)
 			ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
 				CHKERRQ(ierr);
 		}
+		else if(problemsSolved[i]==8)
+		{
+			cout << "Solved stripfoot for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
+			exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
+			ierr=stripfoot(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
+				// CHKERRQ(ierr);
+		}
 	}
 	
 /*		PETSC FINALIZE

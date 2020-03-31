@@ -72,6 +72,7 @@ public:
 	void assemblyMandelIndependentTermsArray(double,double);
 	void addMandelRigidMotion();
 	void addMandelForce(double,double);
+	void addStripfootBC(int,double,double);
 	void assemblyMacroIndependentTermsArray(double,double,double,double,double,double,double,double,
 		double,double,double,vector<vector<double>>,vector<vector<double>>,vector<vector<double>>,
 		vector<vector<double>>,int,double,double,double,double);
@@ -92,7 +93,7 @@ public:
 		int);
 	void addI2DPISMicroPressureToMacro(double,double,double,double,double,vector<vector<double>>,
 		int);
-	void addStripfootBC(int,double,double);
+	void addMacroStripfootBC(int,double,double);
 
 	// Constructor
 	independentTermsAssembly(vector<vector<int>>,vector<vector<double>>,int,int,int,
@@ -1966,6 +1967,40 @@ void independentTermsAssembly::addMandelForce(double F, double L)
 	return;
 }
 
+void independentTermsAssembly::addStripfootBC(int strip, double dx, double stripLoad)
+{
+	int v_P, P_P;
+	int j;
+
+	if(gridType=="collocated")
+	{
+		v_P=getVDisplacementFVPosition(0,0);
+		independentTermsArray[v_P]+=stripLoad*dx*0.5;
+		
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
+		{
+			P_P=getPressureFVPosition(0,j);
+
+			independentTermsArray[P_P]=0;
+		}
+	}
+	else
+	{
+		v_P=getVDisplacementFVPosition(0,0);
+
+		independentTermsArray[v_P]+=stripLoad*dx;		
+	}
+
+	for(j=1; j<strip+1; j++)
+	{
+		v_P=getVDisplacementFVPosition(0,j);
+
+		independentTermsArray[v_P]+=stripLoad*dx;
+	}
+
+	return;
+}
+
 void independentTermsAssembly::increaseMacroIndependentTermsArray()
 {
 	NPM=NP;
@@ -3015,7 +3050,7 @@ void independentTermsAssembly::addI2DPISMicroPressureToMacro(double dx, double d
 	return;
 }
 
-void independentTermsAssembly::addStripfootBC(int strip, double dx, double stripLoad)
+void independentTermsAssembly::addMacroStripfootBC(int strip, double dx, double stripLoad)
 {
 	int v_P, P_P;
 	int j;

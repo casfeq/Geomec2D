@@ -88,6 +88,7 @@ public:
 	void addMandelStaggeredStress(double,double,double,double,double);
 	void addMandelCollocatedStressToVDisplacement(double);
 	void addMandelCollocatedStress(double,double,double,double,double);
+	void addStripfootBC(int,double,double);
 	void assemblyMacroPorosityMatrix(double,double,double,double,double,double,double,double,double,
 		double,double,double,double);
 	void increaseMacroPorosityCoefficientsMatrixSize();
@@ -112,7 +113,7 @@ public:
 	void addMacroPressuretoContinuity(double,double,double);
 	void addMacroBCToContinuity();
 	void addMacroDirichletBCToContinuity(int);
-	void addStripfootBC(int,double,double);
+	void addMacroStripfootBC(int,double,double);
 
 	// Constructor
 	coefficientsAssembly(vector<vector<int>>,int,int,int,vector<vector<int>>,vector<vector<int>>,
@@ -2692,6 +2693,36 @@ void coefficientsAssembly::addMandelCollocatedStress(double dx, double dy, doubl
 	return;
 }
 
+void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
+{
+	int P_P;
+	int j;
+
+	if(gridType=="collocated")
+	{
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
+		{
+			P_P=getPressureFVPosition(0,j);
+
+			coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
+			coefficientsMatrix[P_P][P_P]+=1;
+		}
+	}
+	else
+	{
+		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		{
+			P_P=getPressureFVPosition(0,j);
+
+			coefficientsMatrix[P_P][P_P]+=2*K/mu_f;
+		}
+	}
+
+	assemblySparseMatrix(coefficientsMatrix);
+
+	return;
+}
+
 void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, double dt, double G,
 	double lambda, double alpha, double K, double mu_f, double Q, double phi, double phiM,
 	double KM, double QM)
@@ -3988,7 +4019,7 @@ void coefficientsAssembly::addMacroDirichletBCToContinuity(int counter)
 	return;
 }
 
-void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
+void coefficientsAssembly::addMacroStripfootBC(int strip, double K, double mu_f)
 {
 	int P_P;
 	int j;
@@ -4007,7 +4038,7 @@ void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
 	{
 		for(j=strip; j<pressureFVIndex[0].size(); j++)
 		{
-			P_P=getPressureFVPosition(0,j);
+			P_P=getMacroPressureFVPosition(0,j);
 
 			coefficientsMatrix[P_P][P_P]+=2*K/mu_f;
 		}
