@@ -91,9 +91,9 @@ int main(int argc, char** args)
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
-	double g=-9.8; // m/s^2
-	double columnLoad=-10e5; // Pa
-	double mandelLoad=-10e5; // N/m
+	double g=0; // m/s^2
+	double columnLoad=-10e3; // Pa
+	double mandelLoad=-10e3; // N/m
 	
 /*		PETSC INITIALIZE
 	----------------------------------------------------------------*/

@@ -1,9 +1,13 @@
+clear
+clear
+clear
 mkdir -p export
 mkdir -p plot
 mkdir -p build
 rm -rf plot/*
-rm -rf export/*
 
+# VERIFICATION
+rm -rf export/*
 export sourceName="mainSolution"
 
 # COMPILE
@@ -13,7 +17,7 @@ make
 cd ..
 echo ""
 
-# GUI
+# PARAMETERS
 declare -a gridType=()
 declare -a interpScheme=()
 declare -a problemsSolved=0
@@ -26,17 +30,9 @@ gridType+=("collocated")
 interpScheme+=("CDS")
 gridType+=("collocated")
 interpScheme+=("I2DPIS")
-
 numRuns=${#gridType[@]}
-
 problemsSolved+=2
 problemsSolved+=4
-
-cd input
-inputOptions=(*.txt)
-inputOptions=("${inputOptions[@]%.*}")
-cd ..
-
 medium="gulfMexicoShale";
 
 # SOLVE
@@ -54,4 +50,35 @@ done
 echo "-- Plotting results"
 python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
 python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
+echo ""
+
+# STABILITY
+rm -rf export/*
+export sourceName="mainStability"
+
+# COMPILE
+cd build
+cmake ..
+make
+cd ..
+echo ""
+
+# PARAMETERS
+medium="softSediment";
+
+# RUN
+echo "-- Testing method's stability"
+echo ""
+for ((i=0; i<numRuns; i++));
+do
+	cd build
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
+	echo ""
+	cd ..
+done
+
+# PLOT
+echo "-- Plotting results"
+python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
+python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
 echo ""
