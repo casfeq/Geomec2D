@@ -38,7 +38,7 @@ for j in range(0,len(gridType)):
 	fig.subplots_adjust(top=0.96,bottom=0.07,left=0.06,right=0.96,wspace=0.3,hspace=0.3)
 		
 	# Define figure's name
-	plotName="plot/stripfootStability_"+gridType[j]+"-grid.pdf"
+	plotName="plot/stripfootStability_"+gridType[j]+"-grid.png"
 
 	# Loop for adding subplots
 	ax=[]

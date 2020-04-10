@@ -31,26 +31,26 @@ interpScheme+=("CDS")
 gridType+=("collocated")
 interpScheme+=("I2DPIS")
 numRuns=${#gridType[@]}
-problemsSolved+=2
-problemsSolved+=4
+# problemsSolved+=2
+# problemsSolved+=4
 medium="gulfMexicoShale";
 
-# SOLVE
-echo "-- Solving benchmarking problems"
-echo ""
-for ((i=0; i<numRuns; i++));
-do
-	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
-	echo ""
-	cd ..
-done
+# # SOLVE
+# echo "-- Solving benchmarking problems"
+# echo ""
+# for ((i=0; i<numRuns; i++));
+# do
+# 	cd build
+# 	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
+# 	echo ""
+# 	cd ..
+# done
 
-# PLOT
-echo "-- Plotting results"
-python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
-python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
-echo ""
+# # PLOT
+# echo "-- Plotting results"
+# python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
+# python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
+# echo ""
 
 # STABILITY
 rm -rf export/*
@@ -65,7 +65,7 @@ echo ""
 
 # PARAMETERS
 problemsSolved+=8
-medium="softSediment";
+medium="modifiedHardSediment";
 
 # RUN
 echo "-- Testing method's stability"
@@ -80,8 +80,8 @@ done
 
 # PLOT
 echo "-- Plotting results"
-python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
-python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
+# python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
+# python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
 python3 -W ignore ./postpro/stripfootPlotStabilityPaper.py ${medium}
 echo ""
 rm -rf export/*
