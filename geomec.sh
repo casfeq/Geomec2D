@@ -8,7 +8,7 @@ rm -rf export/*
 ans=$(zenity --list --text "Choose an application" --radiolist --column "Pick" --column \
 	"Application" FALSE "Verification" FALSE "h_Convergence_Analysis" FALSE \
 	"t_Convergence_Analysis" FALSE "Stability_Test" FALSE "Dimensionless_Stability_Test" \
-	FALSE "Double_Porosity" --width=300 --height=300); echo $ans
+	--width=300 --height=300); echo $ans
 if [ $ans == "Verification" ]; then
 	clear
 	./bash/solution.sh
@@ -24,9 +24,6 @@ elif [ $ans == "Stability_Test" ]; then
 elif [ $ans == "Dimensionless_Stability_Test" ]; then
 	clear
 	./bash/dimless.sh
-elif [ $ans == "Double_Porosity" ]; then
-	clear
-	./bash/double.sh
 else
 	clear
 	zenity --error --text "No application selected "

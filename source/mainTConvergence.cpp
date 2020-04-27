@@ -3,9 +3,7 @@
 	consolidation problem as part of a master's thesis entitled "Analysis of Numerical Schemes in
 	Collocated and Staggered Grids for Problems of Poroelasticity". This source code uses the 
 	functions predefined for the solution of the problem presented and solved by Terzaghi [2]. The 
-	governing equations are discretized within the FVM and the resulting linear system of equations 
-	is solved with a LU Factorization found in PETSc [1]. The numerical error in comparison to the 
-	analytical solution is plotted against the timestep size to test the convergence of the method.
+	governing equations are discretized within the FVM and the resulting linear system of equations is solved with a LU Factorization found in PETSc [1]. The numerical error in comparison to the analytical solution is plotted against the timestep size to test the convergence of the method.
 
  	Written by FERREIRA, C. A. S.
 

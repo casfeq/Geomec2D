@@ -48,8 +48,8 @@ done
 
 # PLOT
 echo "-- Plotting results"
-python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
-python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
+python3 -W ignore ./postpro/terzaghiPlotSolutionCILAMCE2020.py ${medium}
+python3 -W ignore ./postpro/mandelPlotSolutionCILAMCE2020.py ${medium}
 echo ""
 
 # # STABILITY

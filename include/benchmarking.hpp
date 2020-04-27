@@ -16,6 +16,7 @@
 
 #include "gridDesign.hpp"
 #include "problemParameters.hpp"
+#include "problemDoubleParameters.hpp"
 #include "coefficientsAssembly.hpp"
 #include "independentTermsAssembly.hpp"
 #include "linearSystemSolver.hpp"
@@ -1105,9 +1106,9 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	string pairName=myProperties.pairName;
 	double G=myProperties.shearModulus;
 	double lambda=myProperties.bulkModulus-2*G/3;
-	double phi=myProperties.porosity;
+	double phim=myProperties.porosity;
 	double phiM=myProperties.macroPorosity;
-	double K=myProperties.permeability;
+	double Km=myProperties.permeability;
 	double KM=myProperties.macroPermeability;
 
 	// Solid properties
@@ -1123,7 +1124,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	// "north" and follows counterclockwise)
 	vector<vector<int>> bcType=
 	{
-		{-1,-1,-1,1},
+		{-1,-1,1,1},
 		{1,-1,-1,-1},
 		{-1,1,-1,-1},
 		{1,-1,-1,-1}
@@ -1162,33 +1163,29 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	vector<vector<int>> verFaceStatus;swap(verFaceStatus,myGrid.verticalFacesStatus);
 	vector<vector<double>> uField;swap(uField,myGrid.uDisplacementField);
 	vector<vector<double>> vField;swap(vField,myGrid.vDisplacementField);
-	vector<vector<double>> pField;swap(pField,myGrid.pressureField);
-	vector<vector<double>> pMField=pField;
+	vector<vector<double>> pmField=myGrid.pressureField;
+	vector<vector<double>> pMField=pmField;
 
 /*		PROBLEM PARAMETERS CALCULATION
 	----------------------------------------------------------------*/
 
 	// Constructor
-	problemParameters myProblem(dx,dy,K,phi,rho_s,c_s,mu_f,rho_f,c_f,G,lambda,sigmab,Lx,Ly,
-		uField,vField,pField,cooU,cooV,cooP,idU,idV,idP,g);
+	problemDoubleParameters myProblem(dx,dy,Km,phim,0,c_s,mu_f,0,c_f,G,lambda,sigmab,Lx,Ly,uField,vField,pmField,cooU,cooV,cooP,idU,idV,idP,phiM,KM);
 
 	// Apply initial conditions
 	myProblem.applyTerzaghiInitialConditions();
 
 	// Passing variables
-	double Q;swap(Q,myProblem.Q);
 	double alpha;swap(alpha,myProblem.alpha);
-	double storageCoefficient=1/Q;
 	double longitudinalModulus;swap(longitudinalModulus,myProblem.M);
 	double consolidationCoefficient;swap(consolidationCoefficient,myProblem.c);
-	double minimumTimeStepVerruijt;swap(minimumTimeStepVerruijt,myProblem.dt_vv);
-	double dt_carlos;swap(dt_carlos,myProblem.dt_carlos);
-	double rho=(phi*rho_f+(1-phi)*rho_s);
+	double Q;swap(Q,myProblem.Q);
 	double initialPressure;swap(initialPressure,myProblem.P0);
 	uField=myProblem.uDisplacementField;
 	vField=myProblem.vDisplacementField;
-	pField=myProblem.pressureField;
+	pmField=myProblem.pressureField;
 	pMField=myProblem.pressureField;
+	double Qm=1/(phim*c_f+(alpha-phim)*c_s);
 	double QM=1/(phiM*c_f+(alpha-phiM)*c_s);
 	
 /*		LINEAR SYSTEM'S COEFFICIENTS MATRIX ASSEMBLY
@@ -1199,7 +1196,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 		horFaceStatus,verFaceStatus,gridType,interpScheme);
 
 	// Coefficients matrix assembly
-	myCoefficients.assemblyMacroPorosityMatrix(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,phi,phiM,KM,QM);
+	myCoefficients.assemblyMacroPorosityMatrix(dx,dy,dt,G,lambda,alpha,Km,mu_f,Qm,phim,phiM,KM,QM);
 
 	// Passing variables
 	vector<vector<double>> coefficientsMatrix;swap(coefficientsMatrix,
@@ -1222,7 +1219,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	independentTermsAssembly myIndependentTerms(bcType,bcValue,Nu,Nv,NP,idU,idV,idP,cooU,cooV,cooP,
 		horFaceStatus,verFaceStatus,gridType,interpScheme);
 	linearSystemSolver myLinearSystemSolver(coefficientsMatrix,sparseCoefficientsRow,
-		sparseCoefficientsColumn,sparseCoefficientsValue,uField,vField,pField,Nu,Nv,NP,Nt,idU,idV,
+		sparseCoefficientsColumn,sparseCoefficientsValue,uField,vField,pmField,Nu,Nv,NP,Nt,idU,idV,
 		idP,cooU,cooV,cooP);
 
 	// Increase the independent terms array
@@ -1241,8 +1238,8 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	for(timeStep=0; timeStep<Nt-1; timeStep++)
 	{
 		// Assembly of the independent terms array
-		myIndependentTerms.assemblyMacroIndependentTermsArray(dx,dy,dt,G,lambda,alpha,K,mu_f,Q,rho,
-			g,uField,vField,pField,pMField,timeStep,phi,phiM,KM,QM);
+		myIndependentTerms.assemblyMacroIndependentTermsArray(dx,dy,dt,G,lambda,alpha,Km,mu_f,Qm,
+			0,0,uField,vField,pmField,pMField,timeStep,phim,phiM,KM,QM);
 
 		// Passing independent terms array
 		independentTermsArray=myIndependentTerms.independentTermsArray;
@@ -1257,7 +1254,7 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 		// Passing solutions
 		uField=myLinearSystemSolver.uField;
 		vField=myLinearSystemSolver.vField;
-		pField=myLinearSystemSolver.pField;
+		pmField=myLinearSystemSolver.pField;
 		pMField=myLinearSystemSolver.pMField;
 		ierr=myLinearSystemSolver.zeroPETScArrays();CHKERRQ(ierr);
 
@@ -1285,12 +1282,14 @@ int terzaghiDouble(string gridType, string interpScheme, int Nt, int meshSize, d
 	}
 
 	// Constructor
-	dataProcessing myDataProcessing(idU,idV,idP,uField,vField,pField,gridType,interpScheme,dx,dy);
+	dataProcessing myDataProcessing(idU,idV,idP,uField,vField,pmField,gridType,interpScheme,dx,dy);
 	myDataProcessing.storeMacroPressure3DField(idP,pMField);
 
 	// Exports data for specified time-steps
 	for(int i=0; i<exportedTimeSteps.size(); i++)
 	{
+		myDataProcessing.exportTerzaghiAnalyticalSolution(Ly,alpha,Q,0,0,0,longitudinalModulus,
+			sigmab,dt,exportedTimeSteps[i],consolidationCoefficient,pairName);
 		myDataProcessing.exportMacroPressureHSolution(dy,h,Ly,exportedTimeSteps[i],pairName);
 		myDataProcessing.exportMacroPressureTSolution(dy,dt,Ly,exportedTimeSteps[i],pairName);
 	}

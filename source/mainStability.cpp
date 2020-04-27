@@ -4,8 +4,7 @@
 	Collocated and Staggered Grids for Problems of Poroelasticity". This source code uses the 
 	functions predefined for the solution of the problems presented and solved by Terzaghi [3] and 
 	Mandel [2]. The governing equations are discretized within the FVM and the resulting linear 
-	system of equations is solved with a LU Factorization found in PETSc [1]. The parameters chosen 
-	are such that the stability of the solution is tested.
+	system of equations is solved with a LU Factorization found in PETSc [1]. The parameters chosen are such that the stability of the solution is tested.
 
  	Written by FERREIRA, C. A. S.
 

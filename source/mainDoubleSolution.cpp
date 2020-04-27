@@ -1,8 +1,6 @@
 /*
 	This source code implements a Finite Volume Method for discretization and solution of the 
-	consolidation problem . The governing equations are discretized within the FVM and the resulting
-	linear system of equations is solved with a LU Factorization found in PETSc [1]. The parameters 
-	chosen are such that the stability of the solution is tested.
+	consolidation problem . The governing equations are discretized within the FVM and the resulting linear system of equations is solved with a LU Factorization found in PETSc [1]. The parameters chosen are such that the stability of the solution is tested.
 
  	Written by FERREIRA, C. A. S.
 
@@ -20,6 +18,10 @@ int main(int argc, char** args)
 	string myGridType=args[1];
 	string myInterpScheme=args[2];
 	string myMedium=args[3];
+	vector<int> problemsSolved;
+	problemsSolved.push_back(atoi(args[4])/100%10);
+	problemsSolved.push_back(atoi(args[4])/10%10);
+	problemsSolved.push_back(atoi(args[4])%10);
 
 /*		PROPERTIES IMPORT
 	----------------------------------------------------------------*/	
@@ -43,9 +45,10 @@ int main(int argc, char** args)
 	inFile >> myProperties.permeability;
 	inFile >> myProperties.fluidViscosity;
 	inFile >> myProperties.fluidDensity;
-	inFile >> myProperties.macroPorosity;
-	inFile >> myProperties.macroPermeability;
 	inFile.close();
+	myProperties.macroPorosity=myProperties.porosity/2;
+	myProperties.porosity=myProperties.porosity/2;
+	myProperties.macroPermeability=myProperties.permeability;
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/
@@ -53,9 +56,9 @@ int main(int argc, char** args)
 	// Consolidation coefficient
 	double storativity,porosity,fluidViscosity,permeability,fluidCompressibility,
 		solidCompressibility,bulkCompressibility,longitudinalModulus,alpha;
-	porosity=myProperties.macroPorosity;
+	porosity=myProperties.porosity+myProperties.macroPorosity;
 	fluidViscosity=myProperties.fluidViscosity;
-	permeability=myProperties.macroPermeability;
+	permeability=(myProperties.permeability+myProperties.macroPermeability)/2;
 	fluidCompressibility=1/myProperties.fluidBulkModulus;
 	solidCompressibility=1/myProperties.solidBulkModulus;
 	bulkCompressibility=1/myProperties.bulkModulus;
@@ -65,22 +68,18 @@ int main(int argc, char** args)
 	double consolidationCoefficient=(permeability/fluidViscosity)/(storativity+
 		alpha*alpha/longitudinalModulus);
 
-	int Nt=2;
-	vector<int> mesh=
-	{
-		3,
-		9
-	};
-	double h=1./mesh[0];
-	double timestepSize=0.05;
+	int Nt=501;
+	int mesh=5;
+	double h=1./mesh;
 	double consolidationTime=h*h/consolidationCoefficient;
-	double Lt=(Nt-1)*(consolidationTime*timestepSize);
-	double dt=Lt/(Nt-1);
-
+	double dt=consolidationTime/2;
+	double Lt=(Nt-1)*dt;
+	
 /*		OTHER PARAMETERS
 	----------------------------------------------------------------*/
 
 	double columnLoad=-10e3; // Pa
+	double mandelLoad=-10e4; // N/m
 	double stripLoad=-10e3; // Pa
 	
 /*		PETSC INITIALIZE
@@ -95,23 +94,33 @@ int main(int argc, char** args)
 	cout << "Grid type: " << myGridType << "\n";
 	cout << "Interpolation scheme: " << myInterpScheme << "\n";
 	cout << "Minimum time-step: " << consolidationTime/6 << "\n";
-	cout << "Solved Terzaghi (double-porosity) for: \n";
-	createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
-	for(int i=0; i<mesh.size(); i++)
+	cout << "Medium:" << myProperties.pairName << "\n";
+	for(int i=0; i<3; i++)
 	{
-		h=1./mesh[i];
-		exportSolveRunInfo(h,"Terzaghi_"+myMedium);
-		ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh[i],Lt,0,columnLoad,myProperties);
-			CHKERRQ(ierr);
-	}
-	cout << "Solved Stripfoot (double-porosity) for: \n";
-	createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
-	for(int i=0; i<mesh.size(); i++)
-	{
-		h=1./mesh[i];
-		exportSolveRunInfo(h,"Stripfoot_"+myMedium);
-		ierr=stripfootDouble(myGridType,myInterpScheme,Nt,mesh[i],Lt,0,stripLoad,myProperties);
-			CHKERRQ(ierr);
+		if(problemsSolved[i]==2)
+		{
+			cout << "Solved Terzaghi for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
+			exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
+			ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+				CHKERRQ(ierr);
+		}
+		else if(problemsSolved[i]==4)
+		{
+			cout << "Solved Mandel for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Mandel");
+			exportSolveRunInfo(dt,"Mandel_"+myMedium);
+			ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
+				CHKERRQ(ierr);
+		}
+		else if(problemsSolved[i]==8)
+		{
+			cout << "Solved stripfoot for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
+			exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
+			ierr=stripfootDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
+				CHKERRQ(ierr);
+		}
 	}
 	
 /*		PETSC FINALIZE

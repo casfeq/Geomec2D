@@ -35,9 +35,9 @@ timesteps.append("500")
 
 # Define markers
 markers=[]
-markers.append("ko")
-markers.append("ks")
-markers.append("kx")
+markers.append("bo")
+markers.append("rs")
+markers.append("gx")
 
 # Define labels
 labels=[]
@@ -52,7 +52,7 @@ fig=plt.figure(figsize=(8,5))
 fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # Define figure's name
-plotName="plot/terzaghiSolution_paper.png"
+plotName="plot/terzaghiSolution_paper.pdf"
 
 # Add subplot for pressure
 fig.add_subplot(1,2,1)
@@ -68,10 +68,10 @@ for j in range(0,len(gridType)):
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yExact=np.loadtxt(fname=fileName)
 		if i==0 and j==0:
-			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25, \
+			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0, \
 				label="Analytical")
 		if j==0:
-			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25)
+			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0)
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		pNumeric=np.loadtxt(fname=fileName)
@@ -80,10 +80,10 @@ for j in range(0,len(gridType)):
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yNumeric=np.loadtxt(fname=fileName)
 		if i==0:
-			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.75, \
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75, \
 				label=labels[j])
 		else:
-			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.75)
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75)
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -107,7 +107,7 @@ plt.grid(which='major',axis='both')
 # Add subplot for pressure
 fig.add_subplot(1,2,2)
 
-Plot displacement
+# Plot displacement
 for j in range(0,len(gridType)):
 	for i in range(0,len(timesteps)):
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VExact_dt="+ \
@@ -118,7 +118,7 @@ for j in range(0,len(gridType)):
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yExact=np.loadtxt(fname=fileName)
 		if j==0:
-			exact=plt.plot(vExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25)
+			exact=plt.plot(vExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0)
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		vNumeric=np.loadtxt(fname=fileName)
@@ -126,7 +126,7 @@ for j in range(0,len(gridType)):
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YVNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yNumeric=np.loadtxt(fname=fileName)
-		numeric,=plt.plot(vNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.75)
+		numeric,=plt.plot(vNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75)
 
 # Set axes' scale and limits
 axes=plt.gca()
