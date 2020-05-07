@@ -100,7 +100,7 @@ plt.text(0,1.5,"689.85 days")
 plt.plot([2.6,4.2],[1.7,2],'-k',linewidth=0.5)
 
 # Set axes' labels
-plt.xlabel('Porous Matrix Pressure (kPa)')
+plt.xlabel('Micropores Pressure (kPa)')
 plt.ylabel('Height (m)')
 plt.grid(which='major',axis='both')
 
@@ -108,7 +108,7 @@ plt.grid(which='major',axis='both')
 fig.add_subplot(1,2,2)
 
 # Plot frac-pressure
-for j in range(0,len(gridType)-1):
+for j in range(0,len(gridType)):
 	for i in range(0,len(timesteps)):
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PExact_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
@@ -143,7 +143,7 @@ plt.text(0,1.5,"689.85 days")
 plt.plot([2.6,4.2],[1.7,2],'-k',linewidth=0.5)
 
 # Set axes' labels
-plt.xlabel('Fracture Pressure (kPa)')
+plt.xlabel('Macropores Pressure (kPa)')
 plt.ylabel('Height (m)')
 plt.grid(which='major',axis='both')
 
