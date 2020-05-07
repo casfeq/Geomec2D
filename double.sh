@@ -8,7 +8,7 @@ rm -rf plot/*
 
 # VERIFICATION
 rm -rf export/*
-export sourceName="mainSolution"
+export sourceName="mainDoubleSolution"
 
 # COMPILE
 cd build
@@ -32,24 +32,31 @@ gridType+=("collocated")
 interpScheme+=("I2DPIS")
 numRuns=${#gridType[@]}
 problemsSolved+=2
-problemsSolved+=4
 medium="gulfMexicoShale";
 
 # SOLVE
+mkdir export/lastrun
 echo "-- Solving benchmarking problems"
-echo ""
 for ((i=0; i<numRuns; i++));
 do
 	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "0" "1"
 	echo ""
 	cd ..
 done
+mv export/terzaghi_${medium}_MacroPNumeric_* export/lastrun
+for ((i=0; i<numRuns; i++));
+do
+	cd build
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "1" "0"
+	echo ""
+	cd ..
+done
+mv export/lastrun/* export
 
 # PLOT
 echo "-- Plotting results"
-python3 -W ignore ./postpro/terzaghiPlotSolutionCILAMCE2020.py ${medium}
-python3 -W ignore ./postpro/mandelPlotSolutionCILAMCE2020.py ${medium}
+python3 -W ignore ./postpro/doublePlotSolutionCILAMCE2020.py ${medium}
 echo ""
 
 # # STABILITY
@@ -84,4 +91,4 @@ echo ""
 # # python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
 # python3 -W ignore ./postpro/stripfootPlotStabilityPaper.py ${medium}
 # echo ""
-# rm -rf export/*
+rm -rf export/*

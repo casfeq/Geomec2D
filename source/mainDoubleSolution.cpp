@@ -22,6 +22,8 @@ int main(int argc, char** args)
 	problemsSolved.push_back(atoi(args[4])/100%10);
 	problemsSolved.push_back(atoi(args[4])/10%10);
 	problemsSolved.push_back(atoi(args[4])%10);
+	double pore=stod(args[5]);
+	double frac=stod(args[6]);
 
 /*		PROPERTIES IMPORT
 	----------------------------------------------------------------*/	
@@ -41,21 +43,22 @@ int main(int argc, char** args)
 	inFile >> myProperties.solidBulkModulus;
 	inFile >> myProperties.solidDensity;
 	inFile >> myProperties.fluidBulkModulus;
-	inFile >> myProperties.porosity;
+	double porosity;
+	inFile >> porosity;
 	inFile >> myProperties.permeability;
 	inFile >> myProperties.fluidViscosity;
 	inFile >> myProperties.fluidDensity;
 	inFile.close();
-	myProperties.macroPorosity=myProperties.porosity/2;
-	myProperties.porosity=myProperties.porosity/2;
+	myProperties.macroPorosity=frac*porosity;
+	myProperties.porosity=pore*porosity;
 	myProperties.macroPermeability=myProperties.permeability;
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/
 
 	// Consolidation coefficient
-	double storativity,porosity,fluidViscosity,permeability,fluidCompressibility,
-		solidCompressibility,bulkCompressibility,longitudinalModulus,alpha;
+	double storativity,fluidViscosity,permeability,fluidCompressibility,solidCompressibility,
+		bulkCompressibility,longitudinalModulus,alpha;
 	porosity=myProperties.porosity+myProperties.macroPorosity;
 	fluidViscosity=myProperties.fluidViscosity;
 	permeability=(myProperties.permeability+myProperties.macroPermeability)/2;
@@ -105,22 +108,14 @@ int main(int argc, char** args)
 			ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
 				CHKERRQ(ierr);
 		}
-		else if(problemsSolved[i]==4)
-		{
-			cout << "Solved Mandel for: \n";
-			createSolveRunInfo(myGridType,myInterpScheme,"Mandel");
-			exportSolveRunInfo(dt,"Mandel_"+myMedium);
-			ierr=mandel(myGridType,myInterpScheme,Nt,mesh,Lt,0,mandelLoad,myProperties);
-				CHKERRQ(ierr);
-		}
-		else if(problemsSolved[i]==8)
-		{
-			cout << "Solved stripfoot for: \n";
-			createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
-			exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
-			ierr=stripfootDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
-				CHKERRQ(ierr);
-		}
+		// else if(problemsSolved[i]==8)
+		// {
+		// 	cout << "Solved stripfoot for: \n";
+		// 	createSolveRunInfo(myGridType,myInterpScheme,"Stripfoot");
+		// 	exportSolveRunInfo(dt,"Stripfoot_"+myMedium);
+		// 	ierr=stripfootDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,stripLoad,myProperties);
+		// 		CHKERRQ(ierr);
+		// }
 	}
 	
 /*		PETSC FINALIZE

@@ -35,9 +35,9 @@ timesteps.append("500")
 
 # Define markers
 markers=[]
-markers.append("bo")
-markers.append("rs")
-markers.append("gx")
+markers.append("ko")
+markers.append("ks")
+markers.append("kx")
 
 # Define labels
 labels=[]
@@ -52,12 +52,12 @@ fig=plt.figure(figsize=(8,5))
 fig.subplots_adjust(top=0.88,bottom=0.15,left=0.08,right=0.92,wspace=0.4)
 
 # Define figure's name
-plotName="plot/terzaghiSolution_paper.pdf"
+plotName="plot/doubleSolution_CILAMCE2020.pdf"
 
 # Add subplot for pressure
 fig.add_subplot(1,2,1)
 
-# Plot pressure
+# Plot pore-pressure
 for j in range(0,len(gridType)):
 	for i in range(0,len(timesteps)):
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PExact_dt="+ \
@@ -68,10 +68,10 @@ for j in range(0,len(gridType)):
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yExact=np.loadtxt(fname=fileName)
 		if i==0 and j==0:
-			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0, \
+			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25, \
 				label="Analytical")
 		if j==0:
-			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0)
+			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25)
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		pNumeric=np.loadtxt(fname=fileName)
@@ -80,10 +80,10 @@ for j in range(0,len(gridType)):
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yNumeric=np.loadtxt(fname=fileName)
 		if i==0:
-			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75, \
-				label=labels[j])
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k', \
+				mew=0.75,label=labels[j])
 		else:
-			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75)
+			numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.75)
 
 # Set axes' scale and limits
 axes=plt.gca()
@@ -100,50 +100,50 @@ plt.text(0,1.5,"689.85 days")
 plt.plot([2.6,4.2],[1.7,2],'-k',linewidth=0.5)
 
 # Set axes' labels
-plt.xlabel('Pressure (kPa)')
+plt.xlabel('Porous Matrix Pressure (kPa)')
 plt.ylabel('Height (m)')
 plt.grid(which='major',axis='both')
 
 # Add subplot for pressure
 fig.add_subplot(1,2,2)
 
-# Plot displacement
-for j in range(0,len(gridType)):
+# Plot frac-pressure
+for j in range(0,len(gridType)-1):
 	for i in range(0,len(timesteps)):
-		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VExact_dt="+ \
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_PExact_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
-		vExact=np.loadtxt(fname=fileName)
-		vExact[:]=[x*1000 for x in vExact]
+		pExact=np.loadtxt(fname=fileName)
+		pExact[:]=[x/1000 for x in pExact]
 		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YExact_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yExact=np.loadtxt(fname=fileName)
 		if j==0:
-			exact=plt.plot(vExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.0)
-		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_VNumeric_dt="+ \
+			exact,=plt.plot(pExact,yExact,'-',color='grey',fillstyle='none',linewidth=1.25)
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_MacroPNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
-		vNumeric=np.loadtxt(fname=fileName)
-		vNumeric[:]=[x*1000 for x in vNumeric]
-		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YVNumeric_dt="+ \
+		pNumeric=np.loadtxt(fname=fileName)
+		pNumeric[:]=[x/1000 for x in pNumeric]
+		fileName=str(parentDirectory)+"/export/terzaghi_"+solvedPairs[0]+"_YPNumeric_dt="+ \
 			format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType[j]+"-grid.txt"
 		yNumeric=np.loadtxt(fname=fileName)
-		numeric,=plt.plot(vNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mew=0.75)
+		numeric,=plt.plot(pNumeric,yNumeric,markers[j],fillstyle='none',ms=5,mec='k',mew=0.75)
 
 # Set axes' scale and limits
 axes=plt.gca()
 axes.set_ylim([0,None])
 
 # Add notes
-plt.text(-0.02,3,"33.11 hours")
-plt.plot([-0.014,-0.0075],[3.2,6],'-k',linewidth=0.5)
-plt.text(-0.02,2.5,"85.54 days")
-plt.plot([-0.014,-0.0075],[2.7,5],'-k',linewidth=0.5)
-plt.text(-0.02,2,"344.93 days")
-plt.plot([-0.013,-0.006],[2.2,3],'-k',linewidth=0.5)
-plt.text(-0.02,1.5,"689.85 days")
-plt.plot([-0.013,-0.005],[1.7,2],'-k',linewidth=0.5)
+plt.text(0,3,"33.11 hours")
+plt.plot([2.6,7.5],[3.2,5],'-k',linewidth=0.5)
+plt.text(0,2.5,"85.54 days")
+plt.plot([2.6,6],[2.7,4],'-k',linewidth=0.5)
+plt.text(0,2,"344.93 days")
+plt.plot([2.6,5],[2.2,3],'-k',linewidth=0.5)
+plt.text(0,1.5,"689.85 days")
+plt.plot([2.6,4.2],[1.7,2],'-k',linewidth=0.5)
 
 # Set axes' labels
-plt.xlabel('Vertical Displacement (mm)')
+plt.xlabel('Fracture Pressure (kPa)')
 plt.ylabel('Height (m)')
 plt.grid(which='major',axis='both')
 

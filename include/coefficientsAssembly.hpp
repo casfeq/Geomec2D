@@ -89,8 +89,7 @@ public:
 	void addMandelCollocatedStressToVDisplacement(double);
 	void addMandelCollocatedStress(double,double,double,double,double);
 	void addStripfootBC(int,double,double);
-	void assemblyMacroPorosityMatrix(double,double,double,double,double,double,double,double,double,
-		double,double,double,double);
+	void assemblyDoublePorosityMatrix(double,double,double,double,double,double,double,double,double,double,double,double,double,double,double);
 	void increaseMacroPorosityCoefficientsMatrixSize();
 	void addMacroPressureToXMomentum(double,double);
 	void addStaggeredMacroPressureToXMomentum(double,double);
@@ -98,7 +97,7 @@ public:
 	void addMacroPressureToYMomentum(double,double);
 	void addStaggeredMacroPressureToYMomentum(double,double);
 	void addCDSMacroPressureToYMomentum(double,double);
-	void addMacroTransientToContinuity(double,double,double,double);
+	void addMacroTransientToContinuity(double,double,double,double,double);
 	void addMacroDisplacementToContinuity(double,double,double,double,double,double);
 	void addStaggeredMacroDisplacementToContinuity(double,double,double,double);
 	void addCDSMacroDisplacementToContinuity(double,double,double,double);
@@ -107,12 +106,11 @@ public:
 		double);
 	void addStaggeredMacroFluidFlowToContinuity(double,double,double,double);
 	void addCollocatedMacroFluidFlowToContinuity(double,double,double,double);
-	void addI2DPISMacroFluidFlowToMicroContinuity(double,double,double,double,double);
-	void addI2DPISMacroFluidFlowToMacroContinuity(double,double,double,double,double);
-	void addI2DPISMicroFluidFlowToMacroContinuity(double,double,double,double,double);
-	void addMacroPressuretoContinuity(double,double,double);
+	void addI2DPISFluidFlowToMicroContinuity(double,double,double,double,double,double);
+	void addLeaktoContinuity(double);
 	void addMacroBCToContinuity();
 	void addMacroDirichletBCToContinuity(int);
+	void assignFakePressure(double,double);
 	void addMacroStripfootBC(int,double,double);
 
 	// Constructor
@@ -135,6 +133,7 @@ coefficientsAssembly::coefficientsAssembly(vector<vector<int>> bcType,
 	Nu=numberOfActiveUDisplacementFV;
 	Nv=numberOfActiveVDisplacementFV;
 	NP=numberOfActivePressureFV;
+	NPM=NP;
 	uDisplacementFVIndex=idU;
 	vDisplacementFVIndex=idV;
 	pressureFVIndex=idP;
@@ -2723,37 +2722,34 @@ void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
 	return;
 }
 
-void coefficientsAssembly::assemblyMacroPorosityMatrix(double dx, double dy, double dt, double G,
-	double lambda, double alpha, double K, double mu_f, double Q, double phi, double phiM,
-	double KM, double QM)
+void coefficientsAssembly::assemblyDoublePorosityMatrix(double dx, double dy, double dt, double G,
+	double lambda, double alpha, double KPore, double KFrac, double mu_f, double A11, double A12,
+	double A22, double psiPore, double psiFrac, double leak)
 {
-	double alpham=alpha*phi/(1-phi-phiM);
-	double alphaM=alpha*phiM/(1-phi-phiM);
-	double propCoef=3*0.4/min(phi*phi,phiM*phiM);
-	NPM=NP;
-
 	increaseMacroPorosityCoefficientsMatrixSize();
 	addUDisplacementToXMomentum(dx,dy,G,lambda);
 	addVDisplacementToXMomentum(dx,dy,G,lambda);
-	addPressureToXMomentum(dy,alpham);
-	addMacroPressureToXMomentum(dy,alphaM);
+	addPressureToXMomentum(dy,psiPore*alpha);
+	addMacroPressureToXMomentum(dy,psiFrac*alpha);
 	addBCToXMomentum(dx,dy,G);
 
 	addUDisplacementToYMomentum(dx,dy,G,lambda);
 	addVDisplacementToYMomentum(dx,dy,G,lambda);
-	addPressureToYMomentum(dx,alpham);
-	addMacroPressureToYMomentum(dx,alphaM);
+	addPressureToYMomentum(dx,psiPore*alpha);
+	addMacroPressureToYMomentum(dx,psiFrac*alpha);
 	addBCToYMomentum(dx,dy,G);
 
-	addTransientToContinuity(dx,dy,dt,Q);
-	addMacroTransientToContinuity(dx,dy,dt,QM);
-	addFluidFlowToContinuity(dx,dy,dt,K,mu_f,alpham,G,lambda);
-	addMacroFluidFlowToContinuity(dx,dy,dt,KM,mu_f,alpham,alphaM,G,lambda);
-	addDisplacementToContinuity(dx,dy,dt,alpham,G,lambda);
-	addMacroDisplacementToContinuity(dx,dy,dt,alphaM,G,lambda);
-	addMacroPressuretoContinuity(propCoef,K,mu_f);
+	addTransientToContinuity(dx,dy,dt,1/A11);
+	addMacroTransientToContinuity(dx,dy,dt,A12,A22);
+	addFluidFlowToContinuity(dx,dy,dt,KPore,mu_f,psiPore*alpha,G,lambda);
+	addMacroFluidFlowToContinuity(dx,dy,dt,KFrac,mu_f,psiPore*alpha,psiFrac*alpha,G,lambda);
+	addDisplacementToContinuity(dx,dy,dt,psiPore*alpha,G,lambda);
+	addMacroDisplacementToContinuity(dx,dy,dt,psiFrac*alpha,G,lambda);
+	addLeaktoContinuity(leak*dx*dy);
 	addBCToContinuity();
 	addMacroBCToContinuity();
+
+	assignFakePressure(psiPore,psiFrac);
 
 	assemblySparseMatrix(coefficientsMatrix);
 
@@ -2990,12 +2986,14 @@ void coefficientsAssembly::addCDSMacroPressureToYMomentum(double dx, double alph
 	return;
 }
 
-void coefficientsAssembly::addMacroTransientToContinuity(double dx, double dy, double dt, double Q)
+void coefficientsAssembly::addMacroTransientToContinuity(double dx, double dy, double dt,
+	double A12, double A22)
 {	
-	int P_P;
+	int P_P, PM_P;
 	int FVCounter;
 	int i, j;
-	double Mp=(1/Q)*(dx*dy/dt);
+	double Mp12=A12*(dx*dy/dt);
+	double Mp22=A22*(dx*dy/dt);
 	int borderCounter=0;
 
 	for(FVCounter=0; FVCounter<NPM; FVCounter++)
@@ -3003,18 +3001,23 @@ void coefficientsAssembly::addMacroTransientToContinuity(double dx, double dy, d
 		i=pressureFVCoordinates[FVCounter][0]-1;
 		j=pressureFVCoordinates[FVCounter][1]-1;
 
-		P_P=getMacroPressureFVPosition(i,j);
+		P_P=getPressureFVPosition(i,j);
+		PM_P=getMacroPressureFVPosition(i,j);
 
 		if(gridType=="staggered")
 		{
-			coefficientsMatrix[P_P][P_P]+=Mp;
+			coefficientsMatrix[PM_P][PM_P]+=Mp22;
+			coefficientsMatrix[P_P][PM_P]+=Mp12;
+			coefficientsMatrix[PM_P][P_P]+=Mp12;
 		}
 		else if(gridType=="collocated")
 		{
 			if(i==0 || i==pressureFVIndex.size()-1) borderCounter++;
 			if(j==0 || j==pressureFVIndex[0].size()-1) borderCounter++;
 
-			coefficientsMatrix[P_P][P_P]+=Mp/pow(2,borderCounter);
+			coefficientsMatrix[PM_P][PM_P]+=Mp22/pow(2,borderCounter);
+			coefficientsMatrix[P_P][PM_P]+=Mp12/pow(2,borderCounter);
+			coefficientsMatrix[PM_P][P_P]+=Mp12/pow(2,borderCounter);
 
 			borderCounter=0;
 		}
@@ -3359,9 +3362,7 @@ void coefficientsAssembly::addMacroFluidFlowToContinuity(double dx, double dy, d
 
 		if(interpScheme=="I2DPIS")
 		{
-			addI2DPISMacroFluidFlowToMicroContinuity(dx,dy,dt,alphaM,G);
-			// addI2DPISMacroFluidFlowToMacroContinuity(dx,dy,dt,alphaM,G);
-			// addI2DPISMicroFluidFlowToMacroContinuity(dx,dy,dt,alpham,G);
+			addI2DPISFluidFlowToMicroContinuity(dx,dy,dt,alpham,alphaM,G);
 		}
 	}
 
@@ -3538,8 +3539,8 @@ void coefficientsAssembly::addCollocatedMacroFluidFlowToContinuity(double dx, do
 	return;
 }
 
-void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, double dy, double dt,
-	double alpha, double G)
+void coefficientsAssembly::addI2DPISFluidFlowToMicroContinuity(double dx, double dy, double dt,
+	double alpham, double alphaM, double G)
 {
 	int P_P, PM_E, PM_W, PM_N, PM_S;
 	int FVCounter;
@@ -3560,20 +3561,20 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_E=getMacroPressureFVPosition(i,j+1);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 	
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx)/(16*G*dt)*dy;
 			}
 			else if(j==pressureFVIndex[0].size()-1) // Eastern border
 			{
 				PM_W=getMacroPressureFVPosition(i,j-1);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx)/(16*G*dt)*dy;
 			}
 			else
 			{
@@ -3581,11 +3582,11 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_W=getMacroPressureFVPosition(i,j-1);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dx)/(16*G*dt)*dy;
 			}
 		}
 		else if(i==pressureFVIndex.size()-1) // Southern border
@@ -3595,20 +3596,20 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_E=getMacroPressureFVPosition(i,j+1);
 				PM_N=getMacroPressureFVPosition(i-1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;		
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx)/(16*G*dt)*dy;		
 			}
 			else if(j==pressureFVIndex[0].size()-1) // Eastern border
 			{
 				PM_W=getMacroPressureFVPosition(i,j-1);
 				PM_N=getMacroPressureFVPosition(i-1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx)/(16*G*dt)*dy;
 			}
 			else
 			{
@@ -3616,11 +3617,11 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_W=getMacroPressureFVPosition(i,j-1);
 				PM_N=getMacroPressureFVPosition(i-1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx)/(16*G*dt)*dy;
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dx)/(16*G*dt)*dy;
 			}
 		}
 		else
@@ -3631,11 +3632,11 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_N=getMacroPressureFVPosition(i-1,j);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
 			}
 			else if(j==pressureFVIndex[0].size()-1) // Eastern border
 			{
@@ -3643,11 +3644,11 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_N=getMacroPressureFVPosition(i-1,j);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);				
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dy)/(16*G*dt)*dx;
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);				
 			}
 			else
 			{
@@ -3656,12 +3657,12 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 				PM_N=getMacroPressureFVPosition(i-1,j);
 				PM_S=getMacroPressureFVPosition(i+1,j);
 
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_N]-=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_S]-=(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_E]-=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][PM_W]-=(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
+				coefficientsMatrix[P_P][P_P]+=2*(alpham*alphaM*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
 			}
 		}
 	}
@@ -3669,269 +3670,7 @@ void coefficientsAssembly::addI2DPISMacroFluidFlowToMicroContinuity(double dx, d
 	return;
 }
 
-void coefficientsAssembly::addI2DPISMacroFluidFlowToMacroContinuity(double dx, double dy, double dt,
-	double alpha, double G)
-{
-	int P_P, PM_E, PM_W, PM_N, PM_S;
-	int FVCounter;
-	int i, j;
-	double value=1;
-
-	for(FVCounter=0; FVCounter<NP; FVCounter++)
-	{
-		i=pressureFVCoordinates[FVCounter][0]-1;
-		j=pressureFVCoordinates[FVCounter][1]-1;
-
-		P_P=getMacroPressureFVPosition(i,j);
-
-		if(i==0) // Northern border
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-	
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-		}
-		else if(i==pressureFVIndex.size()-1) // Southern border
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;		
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-		}
-		else
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);				
-			}
-			else
-			{
-				PM_E=getMacroPressureFVPosition(i,j+1);
-				PM_W=getMacroPressureFVPosition(i,j-1);
-				PM_N=getMacroPressureFVPosition(i-1,j);
-				PM_S=getMacroPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-			}
-		}
-	}
-	
-	return;
-}
-
-void coefficientsAssembly::addI2DPISMicroFluidFlowToMacroContinuity(double dx, double dy, double dt,
-	double alpha, double G)
-{
-	int P_P, PM_E, PM_W, PM_N, PM_S;
-	int FVCounter;
-	int i, j;
-	double value=1;
-
-	for(FVCounter=0; FVCounter<NP; FVCounter++)
-	{
-		i=pressureFVCoordinates[FVCounter][0]-1;
-		j=pressureFVCoordinates[FVCounter][1]-1;
-
-		P_P=getMacroPressureFVPosition(i,j);
-
-		if(i==0) // Northern border
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_S=getPressureFVPosition(i+1,j);
-	
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_S=getPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_S=getPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-		}
-		else if(i==pressureFVIndex.size()-1) // Southern border
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_N=getPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;		
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_N=getPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-			else
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_N=getPressureFVPosition(i-1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx)/(16*G*dt)*dy;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx)/(16*G*dt)*dy;
-			}
-		}
-		else
-		{
-			if(j==0) // Western border
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_N=getPressureFVPosition(i-1,j);
-				PM_S=getPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-			}
-			else if(j==pressureFVIndex[0].size()-1) // Eastern border
-			{
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_N=getPressureFVPosition(i-1,j);
-				PM_S=getPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy)/(16*G*dt)*dx;
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);				
-			}
-			else
-			{
-				PM_E=getPressureFVPosition(i,j+1);
-				PM_W=getPressureFVPosition(i,j-1);
-				PM_N=getPressureFVPosition(i-1,j);
-				PM_S=getPressureFVPosition(i+1,j);
-
-				coefficientsMatrix[P_P][PM_N]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_S]-=(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dy*dx*dx*dx)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_E]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][PM_W]-=(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-				coefficientsMatrix[P_P][P_P]+=2*(alpha*alpha*dx*dy*dy*dy)/(8*G*(dx*dx+dy*dy)*dt);
-			}
-		}
-	}
-	
-	return;
-}
-
-void coefficientsAssembly::addMacroPressuretoContinuity(double propCoef, double K, double mu_f)
+void coefficientsAssembly::addLeaktoContinuity(double leak)
 {
 	int i, j;
 	int P_P, PM_P;
@@ -3944,10 +3683,10 @@ void coefficientsAssembly::addMacroPressuretoContinuity(double propCoef, double 
 		P_P=getPressureFVPosition(i,j);
 		PM_P=getMacroPressureFVPosition(i,j);
 
-		coefficientsMatrix[P_P][P_P]-=-propCoef*K/mu_f;
-		coefficientsMatrix[P_P][PM_P]-=propCoef*K/mu_f;
-		coefficientsMatrix[PM_P][P_P]-=propCoef*K/mu_f;
-		coefficientsMatrix[PM_P][PM_P]-=-propCoef*K/mu_f;
+		coefficientsMatrix[P_P][P_P]-=-leak;
+		coefficientsMatrix[P_P][PM_P]-=leak;
+		coefficientsMatrix[PM_P][P_P]-=leak;
+		coefficientsMatrix[PM_P][PM_P]-=-leak;
 	}
 
 	return;
@@ -4014,6 +3753,42 @@ void coefficientsAssembly::addMacroDirichletBCToContinuity(int counter)
 				}
 				break;
 		}
+	}
+
+	return;
+}
+
+void coefficientsAssembly::assignFakePressure(double psiPore, double psiFrac)
+{
+	int P_P;
+	int FVCounter;
+	int i, j;
+
+	if(psiPore==0)
+	{
+		for(FVCounter=0; FVCounter<NP; FVCounter++)
+		{
+			i=pressureFVCoordinates[FVCounter][0]-1;
+			j=pressureFVCoordinates[FVCounter][1]-1;
+
+			P_P=getPressureFVPosition(i,j);
+
+			coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
+			coefficientsMatrix[P_P][P_P]+=1;
+		}
+	}
+	else if(psiFrac==0)
+	{
+		for(FVCounter=0; FVCounter<NP; FVCounter++)
+		{
+			i=pressureFVCoordinates[FVCounter][0]-1;
+			j=pressureFVCoordinates[FVCounter][1]-1;
+
+			P_P=getMacroPressureFVPosition(i,j);
+
+			coefficientsMatrix[P_P].assign(Nu+Nv+NP+NPM,0);
+			coefficientsMatrix[P_P][P_P]+=1;
+		}		
 	}
 
 	return;

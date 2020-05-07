@@ -16,228 +16,67 @@ class problemDoubleParameters
 {
 public:
 	// Class variables
-	double K; // [m^2]
-	double Km; // [m^2]
-	double KM; // [m^2]
-	double mu_f; // [Pa.s]
-	double rho_f=0; // [kg/m^3]
-	double rho_s=0; // [kg/m^3]
-	double rho; // [kg/m^3]
-	double c_s; // [Pa^-1]
-	double c_f; // [Pa^-1]
-	double alpha; // [adim]
-	double G; // [Pa]
-	double lambda; // [Pa]
-	double phi; // [adim]
-	double phim; // [adim]
-	double phiM; // [adim]
-	double sigmab; // [Pa]
-	double F; // [N/m]
-	double g=0; // [m/s^2]
-	double Q;
-	double c;
-	double M;
-	double dx;
-	double dy;
-	double dt_vv;
-	double dt_carlos;
-	double u0;
-	double v0;
-	double e0;
-	double P0;
-	double Lx;
-	double Ly;
-	vector<vector<double>> uDisplacementField;
-	vector<vector<double>> vDisplacementField;
-	vector<vector<double>> pressureField;
-	int Nu;
-	int Nv;
-	int NP;
-	vector<vector<int>> uDisplacementFVCoordinates;
-	vector<vector<int>> vDisplacementFVCoordinates;
-	vector<vector<int>> pressureFVCoordinates;
-	vector<vector<int>> uDisplacementFVIndex;
-	vector<vector<int>> vDisplacementFVIndex;
-	vector<vector<int>> pressureFVIndex;
+	double phiPore, phiFrac;
+	double c_f, c_s, c_b, G, lambda;
+	double mu_f, KPore,KFrac;
+	double alpha, A11, A12, A22, consolCoef;
+	double psiPore, psiFrac;
+	double leakTerm;
 
 	// Class functions
-	int getUDisplacementFVPosition(int,int);
-	int getVDisplacementFVPosition(int,int);
-	int getPressureFVPosition(int,int);
 	void computeProblemParameters();
-	void applyTerzaghiInitialConditions();
-	void applyMandelInitialConditions();
+	double computeLeakTerm(double);
 
 	// Constructor
-	problemDoubleParameters(double,double,double,double,double,double,double,double,double,double,double,double,double,double,vector<vector<double>>,vector<vector<double>>,
-		vector<vector<double>>,vector<vector<int>>,vector<vector<int>>,vector<vector<int>>,
-		vector<vector<int>>,vector<vector<int>>,vector<vector<int>>,double,double);
+	problemDoubleParameters(double,double,double,double,double,double,double,double,double);
 
 	// Destructor
 	~problemDoubleParameters();
 };
 
-problemDoubleParameters::problemDoubleParameters(double deltax, double deltay, double porousMediumPermeability, double porousMediumPorosity, double solidMatrixDensity,
-	double solidMatrixCompressibility, double fluidViscosity, double fluidDensity,
-	double fluidCompressibility, double shearModulus, double lames1stParameter,
-	double prescribedNormalStress, double b, double H, vector<vector<double>> uField,
-	vector<vector<double>> vField, vector<vector<double>> pField, vector<vector<int>> cooU,
-	vector<vector<int>> cooV, vector<vector<int>> cooP, vector<vector<int>> idU, 
-	vector<vector<int>> idV, vector<vector<int>> idP, double fracturePorosity,
-	double fracturePermeability)
+problemDoubleParameters::problemDoubleParameters(double porosityPore, double porosityFrac,
+	double fluidCompressibility, double solidCompressibility, double shearModulus,
+	double lame1stParameter, double fluidViscosity, double permeabilityPore,
+	double permeabilityFrac)
 {
-	rho_s=solidMatrixDensity;
-	c_s=solidMatrixCompressibility;
-	mu_f=fluidViscosity;
-	rho_f=fluidDensity;
+	phiPore=porosityPore;
+	phiFrac=porosityFrac;
 	c_f=fluidCompressibility;
+	c_s=solidCompressibility;
 	G=shearModulus;
-	lambda=lames1stParameter;
-	sigmab=prescribedNormalStress;
-	dx=deltax;
-	dy=deltay;
-	Lx=b;
-	Ly=H;
-	F=sigmab*Lx;
-	uDisplacementField=uField;
-	vDisplacementField=vField;
-	pressureField=pField;
-	Nu=uField.size();
-	Nv=vField.size();
-	NP=pField.size();
-	uDisplacementFVCoordinates=cooU;
-	vDisplacementFVCoordinates=cooV;
-	pressureFVCoordinates=cooP;
-	uDisplacementFVIndex=idU;
-	vDisplacementFVIndex=idV;
-	pressureFVIndex=idP;
-	KM=fracturePermeability;
-	phiM=fracturePorosity;
-	Km=porousMediumPermeability;
-	phim=porousMediumPorosity;
+	lambda=lame1stParameter;
+	c_b=1/(lambda+2*G/3);
+	mu_f=fluidViscosity;
+	KPore=permeabilityPore;
+	KFrac=permeabilityFrac;
 
 	computeProblemParameters();
 }
 
 problemDoubleParameters::~problemDoubleParameters(){}
 
-int problemDoubleParameters::getUDisplacementFVPosition(int x, int y)
-{
-	int uDisplacementFVPosition;
-
-	uDisplacementFVPosition=uDisplacementFVIndex[x][y]-1;
-
-	return uDisplacementFVPosition;
-}
-
-int problemDoubleParameters::getVDisplacementFVPosition(int x, int y)
-{
-	int vDisplacementFVPosition;
-
-	vDisplacementFVPosition=vDisplacementFVIndex[x][y]+Nu-1;
-
-	return vDisplacementFVPosition;
-}
-
-int problemDoubleParameters::getPressureFVPosition(int x, int y)
-{
-	int pressureFVPosition;
-
-	pressureFVPosition=pressureFVIndex[x][y]+Nu+Nv-1;
-
-	return pressureFVPosition;
-}
-
 void problemDoubleParameters::computeProblemParameters()
 {
-	phi=phim+phiM;
-	alpha=1-c_s*(lambda+2/3*G);
-	Q=1/(c_s*alpha+(c_f-c_s)*phi);
-	M=2*G+lambda;
-	K=(KM+Km)/2;
-	c=(K*Q*M)/(mu_f*(M+Q*alpha*alpha));
-	dt_vv=(dx*dy)/(6*c);
-	dt_carlos=(dx*dy)/c;
+	psiPore=phiPore/(phiPore+phiFrac);
+	psiFrac=phiFrac/(phiPore+phiFrac);
+	alpha=1-(c_s/c_b);
+	A11=phiPore*(c_f-c_s)+psiPore*alpha*(1-psiPore*alpha-phiFrac)*c_b;
+	A12=psiPore*alpha*(psiFrac*alpha-phiFrac)*c_b;
+	A22=phiFrac*(c_f-c_s)+psiFrac*alpha*(1-psiFrac*alpha)*c_b-phiFrac*psiPore*alpha*c_b;
+
+	double M=2*G+lambda;
+	double consolCoefPore=(KPore/mu_f)/(A11+alpha*psiPore*alpha*psiPore/M);
+	double consolCoefFrac=(KFrac/mu_f)/(A22+alpha*psiFrac*alpha*psiFrac/M);
+	consolCoef=min(consolCoefPore,consolCoefFrac);
 
 	return;
 }
 
-void problemDoubleParameters::applyTerzaghiInitialConditions()
+double problemDoubleParameters::computeLeakTerm(double beta)
 {
-	int i, j, v_P, P_P;
-	double As, yValue, vValue, pValue;
+	leakTerm=beta*0.4/min(phiPore*phiPore,phiFrac*phiFrac);
+	leakTerm=leakTerm*KPore/mu_f;
+	if(phiPore==0 || phiFrac==0) leakTerm=0;
 	
-	As=sigmab/(M+alpha*alpha*Q)+(rho*g*Ly)/(2*(M+alpha*alpha*Q))+0.5*(rho-alpha*rho_f)*(g*Ly/M);
-	P0=0.5*rho_f*g*Ly+alpha*Q*(rho-alpha*rho_f)*g*Ly/(2*M)-alpha*Q*As;
-
-	for(int FVCounter=0; FVCounter<Nu; FVCounter++)
-	{
-		uDisplacementField[FVCounter][0]=0;
-	}
-
-	for(int FVCounter=0; FVCounter<Nv; FVCounter++)
-	{
-		i=vDisplacementFVCoordinates[FVCounter][0]-1;
-		j=vDisplacementFVCoordinates[FVCounter][1]-1;
-
-		v_P=getVDisplacementFVPosition(i,j);
-
-		yValue=Ly-i*dy;
-		vValue=-((rho-alpha*rho_f)*g*yValue*yValue)/(2*M)+As*yValue;
-		vDisplacementField[v_P-Nu][0]=vValue;
-	}
-
-	for(int FVCounter=0; FVCounter<NP; FVCounter++)
-	{
-		i=pressureFVCoordinates[FVCounter][0]-1;
-		j=pressureFVCoordinates[FVCounter][1]-1;
-
-		P_P=getPressureFVPosition(i,j);
-
-		yValue=(Ly-dy/2)-i*dy;
-		pValue=P0-rho_f*g*(Ly-yValue);
-		pressureField[P_P-Nu-Nv][0]=pValue;
-	}
-
-	return;
-}
-
-void problemDoubleParameters::applyMandelInitialConditions()
-{
-	int Nx=Lx/dx;
-	int Ny=Ly/dy;
-	int i, j;
-	int u_P, v_P;
-
-	e0=F/(Lx*(2*alpha*alpha*Q+M+lambda));
-	P0=-(alpha*Q*F)/(Lx*(2*alpha*alpha*Q+M+lambda));
-
-	for(int FVCounter=0; FVCounter<Nu; FVCounter++)
-	{
-		i=uDisplacementFVCoordinates[FVCounter][0]-1;
-		j=uDisplacementFVCoordinates[FVCounter][1]-1;
-
-		u_P=getUDisplacementFVPosition(i,j);
-
-		u0=-((alpha*alpha*Q+lambda)/(2*G))*e0*j*dx;
-		uDisplacementField[u_P][0]=u0;
-	}
-
-	for(int FVCounter=0; FVCounter<Nv; FVCounter++)
-	{
-		i=vDisplacementFVCoordinates[FVCounter][0]-1;
-		j=vDisplacementFVCoordinates[FVCounter][1]-1;
-
-		v_P=getVDisplacementFVPosition(i,j);
-
-		v0=(M+alpha*alpha*Q)/(2*G)*e0*(Ly-i*dy);
-		vDisplacementField[v_P-Nu][0]=v0;
-	}
-
-	for(int FVCounter=0; FVCounter<NP; FVCounter++)
-	{
-		pressureField[FVCounter][0]=P0;
-	}
-
-	return;
+	return leakTerm;
 }
