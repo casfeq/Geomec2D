@@ -23,43 +23,43 @@ numRuns=${#gridType[@]}
 problemsSolved+=2
 problemsSolved+=8
 
-# VERIFICATION
-rm -rf export/*
-export sourceName="mainDoubleSolution"
-medium="gulfMexicoShale";
+# # VERIFICATION
+# rm -rf export/*
+# export sourceName="mainDoubleSolution"
+# medium="gulfMexicoShale";
 
-# COMPILE
-cd build
-cmake ..
-make
-cd ..
-echo ""
+# # COMPILE
+# cd build
+# cmake ..
+# make
+# cd ..
+# echo ""
 
 
-# RUN
-mkdir export/lastrun
-echo "-- Solving benchmarking problems"
-for ((i=0; i<numRuns; i++));
-do
-	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "0" "1"
-	echo ""
-	cd ..
-done
-mv export/terzaghi_${medium}_MacroPNumeric_* export/lastrun
-for ((i=0; i<numRuns; i++));
-do
-	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "1" "0"
-	echo ""
-	cd ..
-done
-mv export/lastrun/* export
+# # RUN
+# mkdir export/lastrun
+# echo "-- Solving benchmarking problems"
+# for ((i=0; i<numRuns; i++));
+# do
+# 	cd build
+# 	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "0" "1"
+# 	echo ""
+# 	cd ..
+# done
+# mv export/terzaghi_${medium}_MacroPNumeric_* export/lastrun
+# for ((i=0; i<numRuns; i++));
+# do
+# 	cd build
+# 	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "1" "0"
+# 	echo ""
+# 	cd ..
+# done
+# mv export/lastrun/* export
 
-# PLOT
-echo "-- Plotting results"
-python3 -W ignore ./postpro/doublePlotSolutionCILAMCE2020.py ${medium}
-echo ""
+# # PLOT
+# echo "-- Plotting results"
+# python3 -W ignore ./postpro/doublePlotSolutionCILAMCE2020.py ${medium}
+# echo ""
 
 # STABILITY
 rm -rf export/*
@@ -79,7 +79,7 @@ echo ""
 for ((i=0; i<numRuns; i++));
 do
 	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "0.95" "0.05"
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved} "0.99" "0.01"
 	echo ""
 	cd ..
 done

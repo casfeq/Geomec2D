@@ -74,7 +74,7 @@ int main(int argc, char** args)
 		alpha*alpha/longitudinalModulus);
 
 	int Nt=2;
-	int mesh=3;
+	int mesh=5;
 	double h=1./mesh;
 	double consolidationTime=h*h/consolidationCoefficient;
 	double Lt;

@@ -6,16 +6,16 @@ mkdir -p plot
 mkdir -p build
 rm -rf plot/*
 
-# VERIFICATION
-rm -rf export/*
-export sourceName="mainSolution"
+# # VERIFICATION
+# rm -rf export/*
+# export sourceName="mainSolution"
 
-# COMPILE
-cd build
-cmake ..
-make
-cd ..
-echo ""
+# # COMPILE
+# cd build
+# cmake ..
+# make
+# cd ..
+# echo ""
 
 # PARAMETERS
 declare -a gridType=()
@@ -31,44 +31,12 @@ interpScheme+=("CDS")
 gridType+=("collocated")
 interpScheme+=("I2DPIS")
 numRuns=${#gridType[@]}
-problemsSolved+=2
-problemsSolved+=4
-medium="gulfMexicoShale";
+# problemsSolved+=2
+# problemsSolved+=4
+# medium="gulfMexicoShale";
 
-# SOLVE
-echo "-- Solving benchmarking problems"
-echo ""
-for ((i=0; i<numRuns; i++));
-do
-	cd build
-	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
-	echo ""
-	cd ..
-done
-
-# PLOT
-echo "-- Plotting results"
-python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
-python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
-echo ""
-
-# # STABILITY
-# rm -rf export/*
-# export sourceName="mainStability"
-
-# # COMPILE
-# cd build
-# cmake ..
-# make
-# cd ..
-# echo ""
-
-# # PARAMETERS
-# problemsSolved+=8
-# medium="modifiedHardSediment";
-
-# # RUN
-# echo "-- Testing method's stability"
+# # SOLVE
+# echo "-- Solving benchmarking problems"
 # echo ""
 # for ((i=0; i<numRuns; i++));
 # do
@@ -80,8 +48,40 @@ echo ""
 
 # # PLOT
 # echo "-- Plotting results"
-# # python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
-# # python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
-# python3 -W ignore ./postpro/stripfootPlotStabilityPaper.py ${medium}
+# python3 -W ignore ./postpro/terzaghiPlotSolutionPaper.py ${medium}
+# python3 -W ignore ./postpro/mandelPlotSolutionPaper.py ${medium}
 # echo ""
-# rm -rf export/*
+
+# STABILITY
+rm -rf export/*
+export sourceName="mainStability"
+
+# COMPILE
+cd build
+cmake ..
+make
+cd ..
+echo ""
+
+# PARAMETERS
+problemsSolved+=8
+medium="abyssalRedClay";
+
+# RUN
+echo "-- Testing method's stability"
+echo ""
+for ((i=0; i<numRuns; i++));
+do
+	cd build
+	./$sourceName ${gridType[$i]} ${interpScheme[$i]} ${medium} ${problemsSolved}
+	echo ""
+	cd ..
+done
+
+# PLOT
+echo "-- Plotting results"
+# python3 -W ignore ./postpro/terzaghiPlotStabilityPaper.py ${medium}
+# python3 -W ignore ./postpro/mandelPlotStabilityPaper.py ${medium}
+python3 -W ignore ./postpro/stripfootPlotStabilityPaper.py ${medium}
+echo ""
+rm -rf export/*

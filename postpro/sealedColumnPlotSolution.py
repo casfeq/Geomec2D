@@ -69,10 +69,12 @@ plotName="plot/sealedColumnSolution_"+gridType+"-grid.png"
 fig.add_subplot(1,2,1)
 
 # Plot pressure
-fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_PExact_"+gridType+"-grid.txt"
+fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_PExact_"+gridType+ \
+	"-grid.txt"
 pExact=np.loadtxt(fname=fileName)
 pExact[:]=[x/1000 for x in pExact]
-fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+"-grid.txt"
+fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+ \
+	"-grid.txt"
 yExact=np.loadtxt(fname=fileName)
 exact,=plt.plot(pExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25,label="Analytical")
 for i in range(0,len(timesteps)):
@@ -99,10 +101,12 @@ plt.grid(which='major',axis='both')
 fig.add_subplot(1,2,2)
 
 # Plot displacement
-fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_VExact_"+gridType+"-grid.txt"
+fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_VExact_"+gridType+ \
+	"-grid.txt"
 vExact=np.loadtxt(fname=fileName)
 vExact[:]=[x*1000 for x in vExact]
-fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+"-grid.txt"
+fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+\
+	"-grid.txt"
 yExact=np.loadtxt(fname=fileName)
 exact=plt.plot(vExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25)
 for i in range(0,len(timesteps)):
@@ -129,85 +133,5 @@ fig.legend(loc='upper center',ncol=3)
 
 # Save figure
 plt.savefig(plotName)
-
-# # SINGLE-PLOT
-
-# # Create and define figure's size and margins
-# fig=plt.figure(figsize=(8,8))
-
-# # Define figure's name
-# plotName="plot/sealedColumnSolution_p_"+gridType+"-grid.png"
-
-# # Plot pressure
-# fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_PExact_"+gridType+"-grid.txt"
-# pExact=np.loadtxt(fname=fileName)
-# pExact[:]=[x/1000 for x in pExact]
-# fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+"-grid.txt"
-# yExact=np.loadtxt(fname=fileName)
-# exact,=plt.plot(pExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25,label="Analytical")
-# for i in range(0,len(timesteps)):
-# 	fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_PNumeric_dt="+ \
-# 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
-# 	pNumeric=np.loadtxt(fname=fileName)
-# 	pNumeric[:]=[x/1000 for x in pNumeric]
-# 	fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YPNumeric_dt="+ \
-# 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
-# 	yNumeric=np.loadtxt(fname=fileName)
-# 	numeric,=plt.plot(pNumeric,yNumeric,'--.',color=colors[i],ms=10.0,mec='k',mew=0.5, \
-# 		label="Time level "+str(timesteps[i]))
-
-# # Set axes' scale and limits
-# axes=plt.gca()
-# axes.set_ylim([0,None])
-
-# # Set axes' labels
-# plt.xlabel('Pressure (kPa)')
-# plt.ylabel('Height (m)')
-# plt.grid(which='major',axis='both')
-
-# # Add figure's legend
-# fig.legend(loc='upper center',ncol=3)
-
-# # Save figure
-# plt.savefig(plotName)
-
-# # Create and define figure's size and margins
-# fig=plt.figure(figsize=(8,8))
-
-# # Define figure's name
-# plotName="plot/sealedColumnSolution_v_"+gridType+"-grid.png"
-
-# # Plot displacement
-# fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_VExact_"+gridType+"-grid.txt"
-# vExact=np.loadtxt(fname=fileName)
-# vExact[:]=[x*1000 for x in vExact]
-# fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YExact_"+gridType+"-grid.txt"
-# yExact=np.loadtxt(fname=fileName)
-# exact=plt.plot(vExact,yExact,'-',color='k',fillstyle='none',linewidth=1.25,label="Analytical")
-# for i in range(0,len(timesteps)):
-# 	fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_VNumeric_dt="+ \
-# 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
-# 	vNumeric=np.loadtxt(fname=fileName)
-# 	vNumeric[:]=[x*1000 for x in vNumeric]
-# 	fileName=str(parentDirectory)+"/export/sealedColumn_"+solvedPairs[0]+"_YVNumeric_dt="+ \
-# 		format(dt,".6f")+"_timeStep="+str(timesteps[i])+"_"+gridType+"-grid.txt"
-# 	yNumeric=np.loadtxt(fname=fileName)
-# 	numeric=plt.plot(vNumeric,yNumeric,'--.',color=colors[i],ms=10.0,mec='k',mew=0.5, \
-# 		label="Time level "+str(timesteps[i]))
-
-# # Set axes' scale and limits
-# axes=plt.gca()
-# axes.set_ylim([0,None])
-
-# # Set axes' labels
-# plt.xlabel('Vertical Displacement (mm)')
-# plt.ylabel('Height (m)')
-# plt.grid(which='major',axis='both')
-
-# # Add figure's legend
-# fig.legend(loc='upper center',ncol=3)
-
-# # Save figure
-# plt.savefig(plotName)
 
 print("Plotted sealed column")

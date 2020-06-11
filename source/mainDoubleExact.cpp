@@ -50,7 +50,7 @@ int main(int argc, char** args)
 	inFile.close();
 	myProperties.macroPorosity=frac*porosity;
 	myProperties.porosity=pore*porosity;
-	myProperties.macroPermeability=myProperties.permeability*1e1;
+	myProperties.macroPermeability=myProperties.permeability*1e3;
 	
 /*		GRID DEFINITION
 	----------------------------------------------------------------*/
@@ -99,12 +99,29 @@ int main(int argc, char** args)
 	{
 		if(problemsSolved[i]==2)
 		{
-			cout << "Solved Terzaghi for: \n";
-			createSolveRunInfo(myGridType,myInterpScheme,"Terzaghi");
-			exportSolveRunInfo(dt,"Terzaghi_"+myMedium);
-			ierr=terzaghiDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+			cout << "Solved Sealed Column (Double Porosity) for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"SealedDouble");
+			exportSolveRunInfo(dt,"SealedDouble_"+myMedium);
+			ierr=sealedDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
 				CHKERRQ(ierr);
 		}
+		else if(problemsSolved[i]==4)
+		{
+			cout << "Solved Drained Column (Double Porosity / Storage) for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"StorageDouble");
+			exportSolveRunInfo(dt,"StorageDouble_"+myMedium);
+			ierr=storageDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+				CHKERRQ(ierr);
+		}
+		else if(problemsSolved[i]==8)
+		{
+			cout << "Solved Drained Column (Double Porosity / Leaking) for: \n";
+			createSolveRunInfo(myGridType,myInterpScheme,"LeakingDouble");
+			exportSolveRunInfo(dt,"LeakingDouble_"+myMedium);
+			ierr=leakingDouble(myGridType,myInterpScheme,Nt,mesh,Lt,0,columnLoad,myProperties);
+				CHKERRQ(ierr);
+		}
+	}
 	
 /*		PETSC FINALIZE
 	----------------------------------------------------------------*/

@@ -2709,7 +2709,7 @@ void coefficientsAssembly::addStripfootBC(int strip, double K, double mu_f)
 	}
 	else
 	{
-		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
 		{
 			P_P=getPressureFVPosition(0,j);
 
@@ -3811,7 +3811,7 @@ void coefficientsAssembly::addMacroStripfootBC(int strip, double K, double mu_f)
 	}
 	else
 	{
-		for(j=strip; j<pressureFVIndex[0].size(); j++)
+		for(j=strip+1; j<pressureFVIndex[0].size(); j++)
 		{
 			P_P=getMacroPressureFVPosition(0,j);
 
